@@ -10,4 +10,5 @@ public class Iti03022024ProjectApplication {
         SpringApplication.run(Iti03022024ProjectApplication.class, args);
     }
 
+
 }
