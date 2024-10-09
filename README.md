@@ -1,4 +1,4 @@
-# iti0302-2024-project
+# iti0302-2024 project: Kraanaauto ERP
 
 **Make sure your project readme is up to date**
 
