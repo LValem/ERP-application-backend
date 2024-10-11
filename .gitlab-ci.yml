@@ -22,6 +22,8 @@ dockerize:
   image: docker:latest
   services:
   - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
   script:
     - |
       echo "DOCKER_REGISTRY: $DOCKER_REGISTRY"
@@ -43,4 +45,5 @@ deploy:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /opt/iti0302/backend && docker-compose pull && docker-compose up -d --remove-orphans"
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /opt/iti0302/backend && docker-compose pull &&
+    - docker-compose up -d --remove-orphans"
