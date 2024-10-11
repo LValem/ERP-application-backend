@@ -239,4 +239,8 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2024-10-11-10 drop default value" author="henrygrunberg">
+        <dropDefaultValue tableName="employee" columnName="permission_id"/>
+    </changeSet>
+
 </databaseChangeLog>

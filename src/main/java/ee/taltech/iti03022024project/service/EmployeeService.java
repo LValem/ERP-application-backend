@@ -18,7 +18,7 @@ public class EmployeeService {
     private final EmployeeMapping employeeMapping;
 
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
-        EmployeeEntity employeeEntity = new EmployeeEntity(null, employeeDto.getName(), null);
+        EmployeeEntity employeeEntity = new EmployeeEntity(null, employeeDto.getName(), 2);
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(employeeEntity);
         return employeeMapping.employeeToDto(savedEmployeeEntity);
     }
