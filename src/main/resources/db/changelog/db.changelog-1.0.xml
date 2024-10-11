@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="2024-10-08-05 Add permission table" author="henrygrunberg">
+        <createTable tableName="permission">
+            <column name="permission_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-06 Insert into permission table" author="henrygrunberg">
+        <insert tableName="permission">
+            <column name="description" value="ADMIN"/>
+        </insert>
+
+        <insert tableName="permission">
+            <column name="description" value="DEFAULT USER"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2024-10-08-01 Add employee table" author="henrygrunberg">
+        <createTable tableName="employee">
+            <column name="employee_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+            <column name="permission_id" type="integer" defaultValue="2">
+                <constraints nullable="false" foreignKeyName="fk_employee_permission" references="permission(permission_id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-02 Add vehicle table" author="henrygrunberg">
+        <createTable tableName="vehicle">
+            <column name="vehicle_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehicle_type" type="char(1)"/>
+            <column name="is_in_use" type="boolean"/>
+            <column name="max_load" type="integer"/>
+            <column name="current_fuel" type="integer"/>
+            <column name="registration_plate" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-05 Add customer table" author="henrygrunberg">
+        <createTable tableName="customer">
+            <column name="customer_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="text"/>
+            <column name="city_county" type="text"/>
+            <column name="zip" type="text"/>
+            <column name="email" type="varchar(100)"/>
+            <column name="phone_number" type="varchar(20)"/>
+            <column name="vat_no" type="varchar(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-04 Add order table" author="henrygrunberg">
+        <createTable tableName="order">
+            <column name="order_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_order_customer" references="customer(customer_id)"/>
+            </column>
+            <column name="pickup_date" type="datetime"/>
+            <column name="drop_off_date" type="datetime"/>
+            <column name="weight" type="integer"/>
+            <column name="width" type="integer"/>
+            <column name="height" type="integer"/>
+            <column name="length" type="integer"/>
+            <column name="order_details" type="varchar(1000)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-03 Add job table" author="henrygrunberg">
+        <createTable tableName="job">
+            <column name="job_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_job_vehicle" references="vehicle(vehicle_id)"/>
+            </column>
+            <column name="employee_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_job_employee" references="employee(employee_id)"/>
+            </column>
+            <column name="order_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_job_order" references="order(order_id)"/>
+            </column>
+            <column name="pickup_date" type="datetime"/>
+            <column name="drop_off_date" type="datetime"/>
+            <column name="is_complete" type="boolean"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-06 Add vehicle_maintenance table" author="henrygrunberg">
+        <createTable tableName="vehicle_maintenance">
+            <column name="maintenance_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_maintenance_vehicle" references="vehicle(vehicle_id)"/>
+            </column>
+            <column name="date" type="date"/>
+            <column name="description" type="text"/>
+            <column name="cost" type="decimal(10,2)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-07 Add invoice table" author="henrygrunberg">
+        <createTable tableName="invoice">
+            <column name="invoice_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_invoice_order" references="order(order_id)"/>
+            </column>
+            <column name="customer_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_invoice_customer" references="customer(customer_id)"/>
+            </column>
+            <column name="job_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_invoice_job" references="job(job_id)"/>
+            </column>
+            <column name="invoice_date" type="date"/>
+            <column name="due_date" type="date"/>
+            <column name="vat_percent" type="double"/>
+            <column name="invoice_nr" type="integer"/>
+            <column name="subtotal" type="double"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-06 Add certification_type table" author="henrygrunberg">
+        <createTable tableName="certification_type">
+            <column name="certification_type_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="certification_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-07 Add certification table" author="henrygrunberg">
+        <createTable tableName="certification">
+            <column name="certification_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="employee_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_certification_employee" references="employee(employee_id)"/>
+            </column>
+            <column name="certification_type_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_certification_certification_type" references="certification_type(certification_type_id)"/>
+            </column>
+            <column name="issued_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiry_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-08 Add fuel_consumption table" author="henrygrunberg">
+        <createTable tableName="fuel_consumption">
+            <column name="fuel_consumption_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="job_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_fuel_consumption_job" references="job(job_id)"/>
+            </column>
+            <column name="vehicle_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_fuel_consumption_vehicle" references="vehicle(vehicle_id)"/>
+            </column>
+            <column name="fuel_used" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="distance_driven" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="consumption_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-09 Add fuel_refill table" author="henrygrunberg">
+        <createTable tableName="fuel_refill">
+            <column name="fuel_refill_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_fuel_refill_vehicle" references="vehicle(vehicle_id)"/>
+            </column>
+            <column name="liters" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cost" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-08-10 Add incident_report table" author="henrygrunberg">
+        <createTable tableName="incident_report">
+            <column name="incident_report_id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="employee_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_incident_report_employee" references="employee(employee_id)"/>
+            </column>
+            <column name="job_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_incident_report_job" references="job(job_id)"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="cost" type="double"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

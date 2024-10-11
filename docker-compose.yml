@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  web-project:
+    image: henrygrynberg/web-project:latest
+    container_name: web-project
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - /opt/iti0302/backend/application.properties:/app/application.properties
