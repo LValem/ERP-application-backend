@@ -22,8 +22,6 @@ dockerize:
   image: docker:latest
   services:
   - docker:dind
-  variables:
-  DOCKER_TLS_CERTDIR: ""
   script:
     - |
       echo "DOCKER_REGISTRY: $DOCKER_REGISTRY"
