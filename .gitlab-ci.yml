@@ -39,7 +39,6 @@ dockerize:
       docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA .
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
       docker push $DOCKER_REGISTRY/$DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA
-      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
       docker tag $DOCKER_REGISTRY/$DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA $DOCKER_REGISTRY/$DOCKER_IMAGE:latest
       docker push $DOCKER_REGISTRY/$DOCKER_IMAGE:latest
 
@@ -53,5 +52,5 @@ deploy:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /opt/iti0302/backend && docker-compose pull &&
-    - docker-compose up -d --remove-orphans"
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /opt/iti0302/backend && docker compose pull &&
+    - docker compose down && docker compose up -d --remove-orphans"
