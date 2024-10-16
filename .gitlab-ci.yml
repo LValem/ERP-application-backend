@@ -52,5 +52,6 @@ deploy:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /opt/iti0302/backend &&
-      docker compose pull && docker compose down && docker compose up -d --remove-orphans"
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+      echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin;
+      cd /opt/iti0302/backend && docker compose pull && docker compose down && docker compose up -d --remove-orphans"
