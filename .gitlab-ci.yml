@@ -10,6 +10,13 @@ variables:
 build:
   stage: build
   image: gradle:jdk21
+  services:
+    - postgres:latest
+  variables:
+    POSTGRES_DB: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: docker
+    POSTGRES_HOST_AUTH_METHOD: trust
   script:
     - chmod +x ./gradlew
     - ./gradlew clean build
