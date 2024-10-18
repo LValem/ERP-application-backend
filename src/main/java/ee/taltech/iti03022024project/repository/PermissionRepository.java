@@ -8,4 +8,5 @@ import java.security.Permission;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Integer> {
+    boolean existsByDescriptionIgnoreCase(String description);
 }
