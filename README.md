@@ -1,5 +1,7 @@
 # iti0302-2024 backend for Kraanaauto ERP
 
+### [kallur.servebeer.com](http://kallur.servebeer.com)
+
 ### Project overview
 
 This project aims to build an ERP system tailored for a crane trucking company. The software will streamline the management of incoming jobs, task creation, and assignment to drivers and vehicles. It will also handle scheduling and provide a centralized platform for overseeing various operations, such as tracking driver availability, vehicle status, job progress, and other related data. The goal is to improve efficiency and coordination within the company's logistics and fleet management processes.
