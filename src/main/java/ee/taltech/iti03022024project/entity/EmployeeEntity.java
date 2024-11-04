@@ -16,4 +16,5 @@ public class EmployeeEntity {
     private Integer employeeId;
     private String name;
     private Integer permissionId;
+    private String password;
 }
