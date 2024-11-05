@@ -1,19 +1,21 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.EmployeeDto;
+import ee.taltech.iti03022024project.dto.LoginRequestDto;
+import ee.taltech.iti03022024project.dto.LoginResponseDto;
 import ee.taltech.iti03022024project.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/employees")
 @Tag(name = "Employees", description = "Employee management APIs")
 public class EmployeeController {
 
@@ -25,7 +27,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee added successfully")
     @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
-    @PostMapping
+    @PostMapping("/api/employees")
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto) {
         EmployeeDto createdEmployee = employeeService.createEmployee(employeeDto);
         return ResponseEntity.ok(createdEmployee);
@@ -37,7 +39,8 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employees retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no employees")
-    @GetMapping
+    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @GetMapping("/api/employees")
     public ResponseEntity<List<EmployeeDto>> getEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
@@ -48,10 +51,27 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Employee with this ID does not exist")
-    @GetMapping("/{id}")
+    @GetMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Integer id) {
         return employeeService.getEmployeeById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
+    @Operation(
+            summary = "Login",
+            description = "Attempts to login with the provided credentials and generates token if login was successful"
+    )
+    @ApiResponse(responseCode = "200", description = "Employee login successful")
+    @ApiResponse(responseCode = "401", description = "Employee login unsuccessful")
+    @PostMapping("/api/login")
+    public LoginResponseDto login(@RequestBody EmployeeDto employeeDto) {
+        return employeeService.login(employeeDto);
+    }
+
+//    @GetMapping("/api/password")
+//    public String getPassword(@RequestBody LoginRequestDto requestDto) {
+//        return employeeService.getPassword(requestDto);
+//    }
 }

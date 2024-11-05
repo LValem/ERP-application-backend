@@ -243,4 +243,11 @@
         <dropDefaultValue tableName="employee" columnName="permission_id"/>
     </changeSet>
 
+    <changeSet id="2024-11-1-1 add password to employee" author="lennartvalem">
+        <addColumn tableName="employee">
+            <column name="password" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
