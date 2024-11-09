@@ -6,17 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer> {
     boolean existsByNameIgnoreCase(String name);
-
-    // ei tea miks ei tööta
-    //String getPasswordByName(String name);
-
-    @Query("SELECT e.password FROM EmployeeEntity e WHERE e.name = :name")
-    String getPasswordByName(@Param("name") String name);
-
-
-    EmployeeEntity getByNameIgnoreCase(String name);
-    boolean existsByName(String name);
+    Optional<EmployeeEntity> getByNameIgnoreCase(String name);
 }

@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class EmployeeDto {
     @Schema(description = "Name of the employee", example = "Lennart Valem")
     private String name;
-    // password on siin ajutine
-    private String password;
 }

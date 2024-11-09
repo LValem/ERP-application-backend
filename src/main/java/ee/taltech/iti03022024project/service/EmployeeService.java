@@ -1,5 +1,6 @@
 package ee.taltech.iti03022024project.service;
 
+import ee.taltech.iti03022024project.dto.CreateEmployeeDto;
 import ee.taltech.iti03022024project.dto.EmployeeDto;
 import ee.taltech.iti03022024project.dto.LoginRequestDto;
 import ee.taltech.iti03022024project.dto.LoginResponseDto;
@@ -29,12 +30,12 @@ public class EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationConfiguration applicationConfiguration;
 
-    public EmployeeDto createEmployee(EmployeeDto employeeDto) {
-        if (employeeRepository.existsByNameIgnoreCase(employeeDto.getName())) {
-            throw new AlreadyExistsException("Employee with name " + employeeDto.getName() + " already exists.");
+    public EmployeeDto createEmployee(CreateEmployeeDto createEmployeeDto) {
+        if (employeeRepository.existsByNameIgnoreCase(createEmployeeDto.getName())) {
+            throw new AlreadyExistsException("Employee with name " + createEmployeeDto.getName() + " already exists.");
         }
-        String hashPassword = passwordEncoder.encode(employeeDto.getPassword());
-        EmployeeEntity employeeEntity = new EmployeeEntity(null, employeeDto.getName(),
+        String hashPassword = passwordEncoder.encode(createEmployeeDto.getPassword());
+        EmployeeEntity employeeEntity = new EmployeeEntity(null, createEmployeeDto.getName(),
                 2, hashPassword);
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(employeeEntity);
         return employeeMapping.employeeToDto(savedEmployeeEntity);
@@ -54,15 +55,13 @@ public class EmployeeService {
         return employeeEntity.map(employeeMapping::employeeToDto);
     }
 
-    public LoginResponseDto login(EmployeeDto employeeDto) {
-        if (!employeeRepository.existsByName(employeeDto.getName()) ||
-                !passwordEncoder.matches(employeeDto.getPassword(),
-                        employeeRepository.getPasswordByName(employeeDto.getName()))) {
-            throw new LoginFailedException("Username or password is incorrect!");
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        Optional<EmployeeEntity> user = employeeRepository.getByNameIgnoreCase(loginRequestDto.getName());
 
+        if (user.isEmpty() || !passwordEncoder.matches(loginRequestDto.getPassword(), user.get().getPassword())) {
+            throw new LoginFailedException("Username or password is incorrect!");
         }
-        EmployeeEntity employeeEntity = employeeRepository.getByNameIgnoreCase(employeeDto.getName());
-        String token = generateToken(employeeEntity);
+        String token = generateToken(user.get());
         return new LoginResponseDto(token);
     }
 
@@ -77,8 +76,4 @@ public class EmployeeService {
                 .signWith(applicationConfiguration.jwtkey())
                 .compact();
     }
-
-//    public String getPassword(LoginRequestDto requestDto) {
-//        return employeeRepository.getPasswordByName(requestDto.getName());
-//    }
 }
