@@ -32,8 +32,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/api/password").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/api/employees").permitAll() // võta ära, lihtsalt testing
-                        .requestMatchers(HttpMethod.GET, "/api/employees").hasAuthority("DEFAULT USER") // Require DEFAULT USER for GET
-                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/employees").permitAll() // Require DEFAULT USER for GET
+                        .requestMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // lisa tagasi kui Token töötab

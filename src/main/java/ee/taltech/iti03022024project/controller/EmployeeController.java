@@ -1,5 +1,6 @@
 package ee.taltech.iti03022024project.controller;
 
+import ee.taltech.iti03022024project.dto.CreateEmployeeDto;
 import ee.taltech.iti03022024project.dto.EmployeeDto;
 import ee.taltech.iti03022024project.dto.LoginRequestDto;
 import ee.taltech.iti03022024project.dto.LoginResponseDto;
@@ -28,8 +29,8 @@ public class EmployeeController {
     @ApiResponse(responseCode = "200", description = "Employee added successfully")
     @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
     @PostMapping("/api/employees")
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto) {
-        EmployeeDto createdEmployee = employeeService.createEmployee(employeeDto);
+    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeDto createEmployeeDto) {
+        EmployeeDto createdEmployee = employeeService.createEmployee(createEmployeeDto);
         return ResponseEntity.ok(createdEmployee);
     }
 
@@ -65,13 +66,9 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee login successful")
     @ApiResponse(responseCode = "401", description = "Employee login unsuccessful")
-    @PostMapping("/api/login")
-    public LoginResponseDto login(@RequestBody EmployeeDto employeeDto) {
-        return employeeService.login(employeeDto);
-    }
 
-//    @GetMapping("/api/password")
-//    public String getPassword(@RequestBody LoginRequestDto requestDto) {
-//        return employeeService.getPassword(requestDto);
-//    }
+    @PostMapping("/api/login")
+    public LoginResponseDto login(@RequestBody LoginRequestDto loginRequestDto) {
+        return employeeService.login(loginRequestDto);
+    }
 }

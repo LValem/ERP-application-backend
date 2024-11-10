@@ -3,10 +3,11 @@ package ee.taltech.iti03022024project.mapping;
 import ee.taltech.iti03022024project.dto.VehicleDto;
 import ee.taltech.iti03022024project.entity.VehicleEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface VehicleMapping {
     VehicleDto vehicleToDto(VehicleEntity vehicleEntity);
     VehicleEntity vehicleToEntity(VehicleDto vehicleDto);
