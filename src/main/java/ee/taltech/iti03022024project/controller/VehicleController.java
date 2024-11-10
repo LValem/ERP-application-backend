@@ -1,5 +1,6 @@
 package ee.taltech.iti03022024project.controller;
 
+import ee.taltech.iti03022024project.dto.UpdateVehicleRequestDto;
 import ee.taltech.iti03022024project.dto.VehicleDto;
 import ee.taltech.iti03022024project.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,4 +56,25 @@ public class VehicleController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(
+            summary = "Update vehicle information",
+            description = "Allows updating vehicle details such as type, status, load, fuel, and registration plate."
+    )
+    @ApiResponse(responseCode = "200", description = "Vehicle updated successfully")
+    @ApiResponse(responseCode = "404", description = "Vehicle with this ID does not exist")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<VehicleDto> updateVehicle(
+            @PathVariable Integer id,
+            @RequestBody UpdateVehicleRequestDto updateVehicleRequestDto
+    ) {
+        return vehicleService.updateVehicle(id, updateVehicleRequestDto.getVehicleType(),
+                        updateVehicleRequestDto.getIsInUse(), updateVehicleRequestDto.getMaxLoad(),
+                        updateVehicleRequestDto.getCurrentFuel(),
+                        updateVehicleRequestDto.getRegistrationPlate())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

@@ -12,10 +12,12 @@ import ee.taltech.iti03022024project.mapping.EmployeeMapping;
 import ee.taltech.iti03022024project.repository.EmployeeRepository;
 import ee.taltech.iti03022024project.security.ApplicationConfiguration;
 import io.jsonwebtoken.Jwts;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ValueRange;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,54 @@ public class EmployeeService {
         Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
         employeeEntity.orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
         return employeeEntity.map(employeeMapping::employeeToDto);
+    }
+
+//    public Optional<EmployeeDto> updateEmployee(Integer id, String name, Integer permissionID, String password) {
+//        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
+//        employeeEntity.orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
+//
+//        if ()
+//    }
+
+    public Optional<EmployeeDto> updateEmployee(Integer id, String name, Integer permissionID, String password) {
+
+        System.out.println(id);
+        System.out.println(name);
+        System.out.println(permissionID);
+        System.out.println(password);
+        // Find the employee by ID
+        Optional<EmployeeEntity> employeeEntityOpt = employeeRepository.findById(id);
+
+        // Throw an exception if the employee is not found
+        EmployeeEntity employeeEntity = employeeEntityOpt
+                .orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
+
+        // Update fields if the new values are provided (not null)
+        if (!name.isEmpty() && !employeeRepository.existsByNameIgnoreCase(name)) {
+            employeeEntity.setName(name);
+        } else {
+            throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
+        }
+
+        ValueRange range = ValueRange.of(1, 3);
+        if (permissionID != null) {
+            if (range.isValidIntValue(permissionID)) {
+                employeeEntity.setPermissionId(permissionID);
+            } else {
+                throw new IllegalArgumentException(permissionID + " is not a real PermissionID!");
+            }
+        }
+
+        if (password != null && !password.trim().isEmpty()) {
+            String hashPassword = passwordEncoder.encode(password);
+            employeeEntity.setPassword(hashPassword);
+        }
+
+        // Save the updated employee entity
+        EmployeeEntity updatedEmployee = employeeRepository.save(employeeEntity);
+
+        // Convert the entity to a DTO and return it
+        return Optional.of(employeeMapping.employeeToDto(updatedEmployee));
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
