@@ -1,14 +1,12 @@
 package ee.taltech.iti03022024project.controller;
 
-import ee.taltech.iti03022024project.dto.CreateEmployeeDto;
-import ee.taltech.iti03022024project.dto.EmployeeDto;
-import ee.taltech.iti03022024project.dto.LoginRequestDto;
-import ee.taltech.iti03022024project.dto.LoginResponseDto;
+import ee.taltech.iti03022024project.dto.*;
 import ee.taltech.iti03022024project.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +38,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employees retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no employees")
-    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/api/employees")
     public ResponseEntity<List<EmployeeDto>> getEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
@@ -55,6 +53,21 @@ public class EmployeeController {
     @GetMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Integer id) {
         return employeeService.getEmployeeById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "w",
+            description = "w"
+    )
+    @PutMapping("/api/employees/{id}")
+//    // hiljem lisaks et ainutl admin saab muuta
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Integer id,
+                                                      @RequestBody UpdateEmployeeRequest request) {
+        return employeeService.updateEmployee(id, request.getName(), request.getPermissionID(), request.getPassword())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

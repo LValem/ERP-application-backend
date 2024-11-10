@@ -30,9 +30,9 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/api/password").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/api/employees").permitAll() // võta ära, lihtsalt testing
-                        .requestMatchers(HttpMethod.GET, "/api/employees").permitAll() // Require DEFAULT USER for GET
+                        .requestMatchers("/api/vehicles/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/employees").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/employees/").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -29,4 +29,10 @@ public class ErrorHandler {
         log.error("Object like this already exists", e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(LoginFailedException.class)
+    public ResponseEntity<Object> handleEmployeeLoginFailedException(LoginFailedException e) {
+        log.error("Login failed, Username or password is incorrect!");
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
+    }
 }
