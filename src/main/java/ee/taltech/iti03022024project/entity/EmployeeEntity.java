@@ -6,19 +6,29 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Data
 @AllArgsConstructor
 @Entity
 @Table(name = "employee")
 public class EmployeeEntity {
+
+    public EmployeeEntity(Integer employeeId, String name, Integer permissionId, String password) {
+        this.employeeId = employeeId;
+        this.name = name;
+        this.permissionId = permissionId;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer employeeId;
-    @Setter
     private String name;
-    @Setter
     private Integer permissionId;
-    @Setter
     private String password;
+
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<CertificationEntity> certifications;
 }
