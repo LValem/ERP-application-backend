@@ -1,12 +1,12 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.*;
+import ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto;
 import ee.taltech.iti03022024project.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -72,6 +72,11 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    @GetMapping("/api/employees/table")
+    public List<EmployeeTableInfoDto> getEmployeeTableInfo() {
+        return employeeService.getEmployeeTableInfo();
+    }
 
     @Operation(
             summary = "Login",

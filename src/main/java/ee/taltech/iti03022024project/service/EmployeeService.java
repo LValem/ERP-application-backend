@@ -4,6 +4,7 @@ import ee.taltech.iti03022024project.dto.CreateEmployeeDto;
 import ee.taltech.iti03022024project.dto.EmployeeDto;
 import ee.taltech.iti03022024project.dto.LoginRequestDto;
 import ee.taltech.iti03022024project.dto.LoginResponseDto;
+import ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto;
 import ee.taltech.iti03022024project.entity.EmployeeEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;
 import ee.taltech.iti03022024project.exception.LoginFailedException;
@@ -18,10 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ValueRange;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -104,6 +103,39 @@ public class EmployeeService {
         // Convert the entity to a DTO and return it
         return Optional.of(employeeMapping.employeeToDto(updatedEmployee));
     }
+
+    public List<EmployeeTableInfoDto> getEmployeeTableInfo() {
+        return aggregateEmployeeCertifications(employeeRepository.getEmployeeTableInfo());
+    }
+
+    private List<EmployeeTableInfoDto> aggregateEmployeeCertifications(List<EmployeeTableInfoDto> rawResults) {
+        Map<String, EmployeeTableInfoDto> aggregatedResults = new HashMap<>();
+
+        for (EmployeeTableInfoDto dto : rawResults) {
+            String key = dto.getEmployeeName() + "-" + dto.getPermissionDescription();
+            EmployeeTableInfoDto aggregatedDto = aggregatedResults.computeIfAbsent(key, k ->
+                    new EmployeeTableInfoDto(
+                            dto.getEmployeeName(),
+                            dto.getPermissionDescription(),
+                            "",
+                            dto.getLastJobDate()
+                    )
+            );
+            if (dto.getCertificationNames() != null) {
+                Set<String> certifications = new HashSet<>(Arrays.asList(aggregatedDto.getCertificationNames().split(", ")));
+                certifications.add(dto.getCertificationNames());
+                aggregatedDto.setCertificationNames(
+                        certifications.stream().filter(s -> !s.isEmpty()).collect(Collectors.joining(", "))
+                );
+            }
+            if (dto.getLastJobDate() != null &&
+                    (aggregatedDto.getLastJobDate() == null || dto.getLastJobDate().isAfter(aggregatedDto.getLastJobDate()))) {
+                aggregatedDto.setLastJobDate(dto.getLastJobDate());
+            }
+        }
+        return new ArrayList<>(aggregatedResults.values());
+    }
+
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Optional<EmployeeEntity> user = employeeRepository.getByNameIgnoreCase(loginRequestDto.getName());
