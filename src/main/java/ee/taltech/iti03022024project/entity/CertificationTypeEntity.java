@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 @Data
@@ -15,6 +16,7 @@ public class CertificationTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer certificationTypeId;
 
+    @Setter
     @Column(nullable = false, length = 100)
     private String certificationName;
 }
