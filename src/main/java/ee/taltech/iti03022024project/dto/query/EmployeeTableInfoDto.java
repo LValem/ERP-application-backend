@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 @Schema(description = "Data Transfer Object representing employee information with permission, multiple certifications, and last job date")
 public class EmployeeTableInfoDto {
 
+    @Schema(description = "Employee id", example = "1")
+    private Integer EmployeeId;
+
     @Schema(description = "Name of the employee", example = "John Doe")
     private String employeeName;
 

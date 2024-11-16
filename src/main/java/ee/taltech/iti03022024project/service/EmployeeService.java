@@ -115,6 +115,7 @@ public class EmployeeService {
             String key = dto.getEmployeeName() + "-" + dto.getPermissionDescription();
             EmployeeTableInfoDto aggregatedDto = aggregatedResults.computeIfAbsent(key, k ->
                     new EmployeeTableInfoDto(
+                            dto.getEmployeeId(),
                             dto.getEmployeeName(),
                             dto.getPermissionDescription(),
                             "",

@@ -1,12 +1,16 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.OrderDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
+import ee.taltech.iti03022024project.dto.query.OrdersTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.OrderSearchCriteria;
 import ee.taltech.iti03022024project.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,5 +71,15 @@ public class OrderController {
         return orderService.updateOrder(id, orderDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/table")
+    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@RequestBody(required = false) OrderSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new OrderSearchCriteria();
+        }
+        PageResponse<OrdersTableInfoDto> response = orderService.searchOrdersTable(criteria);
+        return ResponseEntity.ok(response);
     }
 }
