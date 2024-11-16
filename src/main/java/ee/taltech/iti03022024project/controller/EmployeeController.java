@@ -26,6 +26,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee added successfully")
     @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @PostMapping("/api/employees")
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeDto createEmployeeDto) {
         EmployeeDto createdEmployee = employeeService.createEmployee(createEmployeeDto);
@@ -64,7 +65,7 @@ public class EmployeeController {
     @PutMapping("/api/employees/{id}")
 //    // hiljem lisaks et ainutl admin saab muuta
 //    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Integer id,
                                                       @RequestBody UpdateEmployeeRequest request) {
         return employeeService.updateEmployee(id, request.getName(), request.getPermissionID(), request.getPassword())
@@ -72,7 +73,7 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     @GetMapping("/api/employees/table")
     public List<EmployeeTableInfoDto> getEmployeeTableInfo() {
         return employeeService.getEmployeeTableInfo();

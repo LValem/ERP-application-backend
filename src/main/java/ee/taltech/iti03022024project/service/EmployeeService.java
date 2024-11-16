@@ -147,15 +147,31 @@ public class EmployeeService {
         return new LoginResponseDto(token);
     }
 
+//    private String generateToken(EmployeeEntity employeeEntity) {
+//        return Jwts.builder()
+//                .subject(employeeEntity.getName())
+//                .claims(Map.of(
+//                        "employeeID", employeeEntity.getEmployeeId()
+//
+//                ))
+//                .issuedAt(new Date())
+//                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+//                .signWith(applicationConfiguration.jwtkey())
+//                .compact();
+//    }
+
     private String generateToken(EmployeeEntity employeeEntity) {
         return Jwts.builder()
                 .subject(employeeEntity.getName())
                 .claims(Map.of(
-                        "employeeID", employeeEntity.getEmployeeId()
+                        "employeeID", employeeEntity.getEmployeeId(),
+                        "name", employeeEntity.getName(),
+                        "permissionID", employeeEntity.getPermissionId()
                 ))
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
                 .signWith(applicationConfiguration.jwtkey())
                 .compact();
     }
+
 }
