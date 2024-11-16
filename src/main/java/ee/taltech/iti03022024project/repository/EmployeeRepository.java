@@ -16,6 +16,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
 
     @Query("""
     SELECT new ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto(
+        e.employeeId,
         e.name,
         p.description,
         cts.certificationName,
