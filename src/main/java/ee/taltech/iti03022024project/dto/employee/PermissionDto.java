@@ -1,4 +1,4 @@
-package ee.taltech.iti03022024project.dto;
+package ee.taltech.iti03022024project.dto.employee;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

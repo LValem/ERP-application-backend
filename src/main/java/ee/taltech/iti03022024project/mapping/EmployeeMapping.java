@@ -1,6 +1,6 @@
 package ee.taltech.iti03022024project.mapping;
 
-import ee.taltech.iti03022024project.dto.EmployeeDto;
+import ee.taltech.iti03022024project.dto.employee.EmployeeDto;
 import ee.taltech.iti03022024project.entity.EmployeeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

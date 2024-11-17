@@ -1,4 +1,4 @@
-package ee.taltech.iti03022024project.dto;
+package ee.taltech.iti03022024project.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

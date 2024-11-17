@@ -11,6 +11,8 @@ import ee.taltech.iti03022024project.repository.CertificationRepository;
 import ee.taltech.iti03022024project.repository.CertificationTypeRepository;
 import ee.taltech.iti03022024project.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +27,11 @@ public class CertificationService {
     private final EmployeeRepository employeeRepository;
     private final CertificationMapping certificationMapping;
 
+    private static final Logger log = LoggerFactory.getLogger(CertificationService.class);
 
     public CertificationDto createCertification(CertificationDto certificationDto) {
+        log.info("Creating certification for employee with ID: {}", certificationDto.getEmployeeId());
+
         CertificationTypeEntity certificationType = certificationTypeRepository.findById(certificationDto.getCertificationTypeId())
                 .orElseThrow(() -> new NotFoundException("Certification type with ID " + certificationDto.getCertificationTypeId() + " does not exist."));
 
@@ -39,21 +44,33 @@ public class CertificationService {
 
         CertificationEntity certificationEntity = certificationMapping.certificationToEntity(certificationDto);
         CertificationEntity savedCertification = certificationRepository.save(certificationEntity);
+
+        log.info("Certification created successfully for employee with ID: {}", certificationDto.getEmployeeId());
         return certificationMapping.certificationToDto(savedCertification);
     }
 
     public List<CertificationDto> getAllCertifications() {
+        log.info("Fetching all certifications.");
+
         List<CertificationEntity> certifications = certificationRepository.findAll();
+
+        log.info("Fetched {} certifications.", certifications.size());
         return certificationMapping.certificationListToDtoList(certifications);
     }
 
     public Optional<CertificationDto> getCertificationById(Integer id) {
+        log.info("Fetching certification with ID: {}", id);
+
         CertificationEntity certificationEntity = certificationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Certification with ID " + id + " does not exist."));
+
+        log.info("Fetched certification with ID: {}", id);
         return Optional.of(certificationMapping.certificationToDto(certificationEntity));
     }
 
     public Optional<CertificationDto> updateCertification(CertificationDto certificationDto) {
+        log.info("Updating certification with ID: {}", certificationDto.getCertificationId());
+
         CertificationEntity certificationEntity = certificationRepository.findById(certificationDto.getCertificationId())
                 .orElseThrow(() -> new NotFoundException("Certification with ID " + certificationDto.getCertificationId() + " does not exist."));
 
@@ -72,6 +89,8 @@ public class CertificationService {
         }
 
         CertificationEntity updatedCertification = certificationRepository.save(certificationEntity);
+
+        log.info("Certification with ID {} updated successfully.", certificationDto.getCertificationId());
         return Optional.of(certificationMapping.certificationToDto(updatedCertification));
     }
 }

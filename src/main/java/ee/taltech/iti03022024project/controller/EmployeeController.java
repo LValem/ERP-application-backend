@@ -1,8 +1,7 @@
 package ee.taltech.iti03022024project.controller;
 
-import ee.taltech.iti03022024project.dto.*;
+import ee.taltech.iti03022024project.dto.employee.*;
 import ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto;
-import ee.taltech.iti03022024project.dto.searchcriteria.EmployeeSearchCriteria;
 import ee.taltech.iti03022024project.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,6 +26,8 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee added successfully")
     @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
+    @ApiResponse(responseCode = "409", description = "Invalid input")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("/api/employees")
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeDto createEmployeeDto) {
@@ -40,6 +41,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employees retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no employees")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/api/employees")
     public ResponseEntity<List<EmployeeDto>> getEmployees() {
@@ -52,6 +54,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Employee with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Integer id) {
@@ -61,11 +64,15 @@ public class EmployeeController {
     }
 
     @Operation(
-            summary = "w",
-            description = "w"
+            summary = "Update employee by ID",
+            description = "Changes the employee with given ID"
     )
-    @PutMapping("/api/employees/{id}")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
+    @ApiResponse(responseCode = "404", description = "Employee with this ID doesn't exist!")
+    @ApiResponse(responseCode = "409", description = "Name or password can't be null!")
+    @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
     @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Integer id,
                                                       @RequestBody UpdateEmployeeRequest request) {
         return employeeService.updateEmployee(id, request.getName(), request.getPermissionID(), request.getPassword())
@@ -89,6 +96,7 @@ public class EmployeeController {
 //        return ResponseEntity.ok(response);
 //    }
 
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/api/employees/table")
     public List<EmployeeTableInfoDto> getEmployeeTableInfo() {

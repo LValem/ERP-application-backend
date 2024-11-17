@@ -44,4 +44,10 @@ public class ErrorHandler {
                 HttpStatus.FORBIDDEN
         );
     }
+
+    @ExceptionHandler(WrongValueException.class)
+    public ResponseEntity<Object> handleWrongValueException(WrongValueException e) {
+        log.error("Entered Values don't fit in criteria!");
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
 }

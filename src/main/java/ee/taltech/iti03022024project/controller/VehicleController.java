@@ -27,6 +27,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle added successfully")
     @ApiResponse(responseCode = "409", description = "Vehicle with this registration plate already exists")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<VehicleDto> createVehicle(@RequestBody VehicleDto vehicleDto) {
@@ -40,6 +41,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicles retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no vehicles")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<VehicleDto>> getVehicles() {
@@ -52,6 +54,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Vehicle with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping("/{id}")
     public ResponseEntity<VehicleDto> getVehicle(@PathVariable Integer id) {
@@ -66,6 +69,8 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle updated successfully")
     @ApiResponse(responseCode = "404", description = "Vehicle with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
+    @ApiResponse(responseCode = "409", description = "Invalid input")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<VehicleDto> updateVehicle(

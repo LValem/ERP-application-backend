@@ -27,6 +27,7 @@ public class CertificationController {
     @ApiResponse(responseCode = "200", description = "Certification created successfully")
     @ApiResponse(responseCode = "404", description = "Certification type or employee not found")
     @ApiResponse(responseCode = "409", description = "Certification with this type already exists for the employee")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CertificationDto> createCertification(@RequestBody CertificationDto certificationDto) {
@@ -39,6 +40,7 @@ public class CertificationController {
             description = "Fetches all certifications and returns a list of certification DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Certifications retrieved successfully")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<CertificationDto>> getAllCertifications() {
@@ -52,6 +54,7 @@ public class CertificationController {
     )
     @ApiResponse(responseCode = "200", description = "Certification retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Certification with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<CertificationDto> getCertificationById(@PathVariable Integer id) {
@@ -67,6 +70,7 @@ public class CertificationController {
     @ApiResponse(responseCode = "200", description = "Certification updated successfully")
     @ApiResponse(responseCode = "404", description = "Certification or certification type not found")
     @ApiResponse(responseCode = "409", description = "Duplicate certification with the same type already exists")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<CertificationDto> updateCertification(@PathVariable Integer id, @RequestBody CertificationDto certificationDto) {

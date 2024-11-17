@@ -30,6 +30,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order created successfully")
     @ApiResponse(responseCode = "404", description = "Customer not found")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
@@ -43,6 +44,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no orders")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
@@ -56,6 +58,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Order with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Integer id) {
@@ -70,6 +73,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @ApiResponse(responseCode = "404", description = "Order or customer not found")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Integer id, @RequestBody OrderDto orderDto) {
@@ -85,6 +89,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no orders")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PostMapping("/table")
     @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
     public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@Valid @RequestBody(required = false) OrderSearchCriteria criteria) {

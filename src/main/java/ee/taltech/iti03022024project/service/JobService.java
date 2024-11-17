@@ -19,6 +19,8 @@ import ee.taltech.iti03022024project.repository.VehicleRepository;
 import ee.taltech.iti03022024project.repository.specifications.DoneJobSpecifications;
 import ee.taltech.iti03022024project.repository.specifications.NotDoneJobSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,8 @@ public class JobService {
     private final OrderRepository orderRepository;
     private final JobMapping jobMapping;
 
+    private static final Logger log = LoggerFactory.getLogger(JobService.class);
+
     public JobDto createJob(JobDto jobDto) {
         VehicleEntity vehicle = vehicleRepository.findById(jobDto.getVehicleId())
                 .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + " does not exist."));
@@ -53,17 +57,24 @@ public class JobService {
         jobEntity.setOrder(order);
 
         JobEntity savedJob = jobRepository.save(jobEntity);
+
+        log.info("Created job with ID: {}", savedJob.getJobId());
+
         return jobMapping.jobToDto(savedJob);
     }
 
     public List<JobDto> getAllJobs() {
         List<JobEntity> jobs = jobRepository.findAll();
+        log.info("Fetched all jobs, count: {}", jobs.size());
         return jobMapping.jobListToDtoList(jobs);
     }
 
     public Optional<JobDto> getJobById(Integer id) {
         JobEntity jobEntity = jobRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Job with ID " + id + " does not exist."));
+
+        log.info("Fetched job with ID: {}", id);
+
         return Optional.of(jobMapping.jobToDto(jobEntity));
     }
 
@@ -97,6 +108,9 @@ public class JobService {
         }
 
         JobEntity updatedJob = jobRepository.save(jobEntity);
+
+        log.info("Updated job with ID: {}", id);
+
         return Optional.of(jobMapping.jobToDto(updatedJob));
     }
 
@@ -139,6 +153,8 @@ public class JobService {
                 job.getIsComplete()
         ));
 
+        log.info("Fetched {} done jobs based on search criteria.", dtoPage.getTotalElements());
+
         // Return a PageResponse wrapping the Page<DoneJobTableInfoDto>
         return new PageResponse<>(dtoPage);
     }
@@ -178,6 +194,8 @@ public class JobService {
                 job.getDropOffDate(),
                 job.getIsComplete()
         ));
+
+        log.info("Fetched {} not done jobs based on search criteria.", dtoPage.getTotalElements());
 
         // Return a PageResponse wrapping the Page<NotDoneJobTableInfoDto>
         return new PageResponse<>(dtoPage);

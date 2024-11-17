@@ -47,7 +47,7 @@ public interface JobRepository extends JpaRepository<JobEntity, Integer>, JpaSpe
     )
     FROM JobEntity j
     LEFT JOIN FuelConsumptionEntity fc ON fc.job = j
-    WHERE j.isComplete IS FALSE
+    WHERE j.isComplete IS TRUE
 """)
     List<DoneJobTableInfoDto> findAllDoneJobTableInfo();
 }

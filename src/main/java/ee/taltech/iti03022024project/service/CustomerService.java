@@ -11,6 +11,8 @@ import ee.taltech.iti03022024project.mapping.CustomerMapping;
 import ee.taltech.iti03022024project.repository.CustomerRepository;
 import ee.taltech.iti03022024project.repository.specifications.CustomerSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,27 +30,44 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapping customerMapping;
 
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
+
     public CustomerDto createCustomer(CustomerDto customerDto) {
+        log.info("Attempting to create customer with name: {}", customerDto.getName());
+
         if (customerRepository.existsByNameIgnoreCase(customerDto.getName())) {
             throw new AlreadyExistsException("Employee with name " + customerDto.getName() + " already exists.");
         }
         CustomerEntity customerEntity = customerMapping.customerToEntity(customerDto);
         CustomerEntity savedCustomer = customerRepository.save(customerEntity);
+
+        log.info("Customer created successfully with name: {}", customerDto.getName());
         return customerMapping.customerToDto(savedCustomer);
     }
 
     public List<CustomerDto> getAllCustomers() {
+        log.info("Fetching all customers.");
+
         List<CustomerEntity> customers = customerRepository.findAll();
-        return customerMapping.customerListToDtoList(customers);
+        List<CustomerDto> customerDtos = customerMapping.customerListToDtoList(customers);
+
+        log.info("Fetched {} customers.", customerDtos.size());
+        return customerDtos;
     }
 
     public Optional<CustomerDto> getCustomerById(Integer id) {
+        log.info("Fetching customer with ID: {}", id);
+
         CustomerEntity customerEntity = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with ID " + id + " does not exist."));
+
+        log.info("Fetched customer with ID: {}", id);
         return Optional.of(customerMapping.customerToDto(customerEntity));
     }
 
     public Optional<CustomerDto> updateCustomer(CustomerDto customerDto) {
+        log.info("Attempting to update customer with ID: {}", customerDto.getCustomerId());
+
         CustomerEntity customerEntity = customerRepository.findById(customerDto.getCustomerId())
                 .orElseThrow(() -> new NotFoundException("Customer with ID " + customerDto.getCustomerId() + " does not exist."));
 
@@ -79,10 +98,14 @@ public class CustomerService {
         }
 
         CustomerEntity updatedCustomer = customerRepository.save(customerEntity);
+
+        log.info("Customer with ID {} updated successfully.", customerDto.getCustomerId());
         return Optional.of(customerMapping.customerToDto(updatedCustomer));
     }
 
     public PageResponse<CustomerTableInfoDto> searchCustomerTable(CustomerSearchCriteria criteria) {
+        log.info("Searching customers with criteria: {}", criteria);
+
         // Default sorting and pagination
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "customerId";
         String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
@@ -123,6 +146,7 @@ public class CustomerService {
                                 .orElse(null))
                 ));
 
+        log.info("Search completed. Found {} customers.", dtoPage.getTotalElements());
         // Return a PageResponse wrapping the Page<CustomerTableInfoDto>
         return new PageResponse<>(dtoPage);
     }
