@@ -35,6 +35,6 @@ public class OrdersTableInfoDto {
     @Schema(description = "Length of the cargo in cm", example = "1500")
     private int length;
 
-    @Schema(description = "Additional order details", example = "3 big blocks of cement, each are 2000kg, the sizes are the same.")
+    @Schema(description = "Additional order details", example = "Address Kuu 10, Saku, in front of the house there are 3 big blocks of cement, each are 2000kg, the sizes are the same.")
     private String orderDetails;
 }

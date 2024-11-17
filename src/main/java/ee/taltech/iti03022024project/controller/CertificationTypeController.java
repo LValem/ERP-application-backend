@@ -1,10 +1,13 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.CertificationTypeDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.service.CertificationTypeService;
+import ee.taltech.iti03022024project.dto.searchcriteria.CertificationTypeSearchCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,5 +75,20 @@ public class CertificationTypeController {
         return certificationTypeService.updateCertificationType(certificationTypeDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "Search for certification types",
+            description = "Search certification types by criteria, sort, and return a paginated table view"
+    )
+    @ApiResponse(responseCode = "200", description = "Certification types retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "There are no certification types")
+    @PostMapping("/table")
+    public ResponseEntity<PageResponse<CertificationTypeDto>> searchCertificationTypes(@Valid @RequestBody(required = false) CertificationTypeSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new CertificationTypeSearchCriteria();
+        }
+        PageResponse<CertificationTypeDto> response = certificationTypeService.searchCertificationTypes(criteria);
+        return ResponseEntity.ok(response);
     }
 }

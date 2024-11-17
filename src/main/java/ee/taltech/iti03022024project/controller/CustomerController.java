@@ -1,10 +1,14 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.CustomerDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
+import ee.taltech.iti03022024project.dto.query.CustomerTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.CustomerSearchCriteria;
 import ee.taltech.iti03022024project.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -73,5 +77,20 @@ public class CustomerController {
         return customerService.updateCustomer(customerDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "Search for customers in table view",
+            description = "Search customers by criteria, sort, and return a paginated table view"
+    )
+    @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "No customers found")
+    @PostMapping("/table")
+    public ResponseEntity<PageResponse<CustomerTableInfoDto>> searchCustomerTable(@Valid @RequestBody(required = false) CustomerSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new CustomerSearchCriteria();
+        }
+        PageResponse<CustomerTableInfoDto> response = customerService.searchCustomerTable(criteria);
+        return ResponseEntity.ok(response);
     }
 }

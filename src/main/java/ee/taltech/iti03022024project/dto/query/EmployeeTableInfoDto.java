@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class EmployeeTableInfoDto {
 
     @Schema(description = "Employee id", example = "1")
-    private Integer EmployeeId;
+    private Integer employeeId;
 
     @Schema(description = "Name of the employee", example = "John Doe")
     private String employeeName;

@@ -13,7 +13,7 @@ public class CustomerDto {
     @Schema(description = "Customer ID", example = "1")
     private Integer customerId;
 
-    @Schema(description = "Name of the customer", example = "John Doe")
+    @Schema(description = "Name of the customer", example = "AS Merko Ehitus Eesti")
     private String name;
 
     @Schema(description = "Address of the customer", example = "123 Elm Street")

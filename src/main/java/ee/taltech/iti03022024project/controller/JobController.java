@@ -1,10 +1,17 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.JobDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
+import ee.taltech.iti03022024project.dto.query.DoneJobTableInfoDto;
+import ee.taltech.iti03022024project.dto.query.NotDoneJobTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.DoneJobSearchCriteria;
+import ee.taltech.iti03022024project.dto.searchcriteria.NotDoneJobSearchCriteria;
+import ee.taltech.iti03022024project.dto.searchcriteria.OrderSearchCriteria;
 import ee.taltech.iti03022024project.service.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,5 +79,33 @@ public class JobController {
         return jobService.updateJob(id, jobDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "Search for done jobs",
+            description = "Fetches a paginated and filtered list of done jobs based on search criteria."
+    )
+    @ApiResponse(responseCode = "200", description = "Done jobs retrieved successfully")
+    @PostMapping("/done-table")
+    public ResponseEntity<PageResponse<DoneJobTableInfoDto>> searchDoneJobs(@Valid @RequestBody(required = false) DoneJobSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new DoneJobSearchCriteria();
+        }
+        PageResponse<DoneJobTableInfoDto> response = jobService.searchDoneJobsTable(criteria);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Search for not done jobs",
+            description = "Fetches a paginated and filtered list of not done jobs based on search criteria."
+    )
+    @ApiResponse(responseCode = "200", description = "Not done jobs retrieved successfully")
+    @PostMapping("/not-done-table")
+    public ResponseEntity<PageResponse<NotDoneJobTableInfoDto>> searchNotDoneJobs(@Valid @RequestBody(required = false) NotDoneJobSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new NotDoneJobSearchCriteria();
+        }
+        PageResponse<NotDoneJobTableInfoDto> response = jobService.searchNotDoneJobsTable(criteria);
+        return ResponseEntity.ok(response);
     }
 }

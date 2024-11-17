@@ -1,12 +1,21 @@
 package ee.taltech.iti03022024project.service;
 
 import ee.taltech.iti03022024project.dto.CustomerDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
+import ee.taltech.iti03022024project.dto.query.CustomerTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.CustomerSearchCriteria;
 import ee.taltech.iti03022024project.entity.CustomerEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;
 import ee.taltech.iti03022024project.exception.NotFoundException;
 import ee.taltech.iti03022024project.mapping.CustomerMapping;
 import ee.taltech.iti03022024project.repository.CustomerRepository;
+import ee.taltech.iti03022024project.repository.specifications.CustomerSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,5 +80,50 @@ public class CustomerService {
 
         CustomerEntity updatedCustomer = customerRepository.save(customerEntity);
         return Optional.of(customerMapping.customerToDto(updatedCustomer));
+    }
+
+    public PageResponse<CustomerTableInfoDto> searchCustomerTable(CustomerSearchCriteria criteria) {
+        // Default sorting and pagination
+        String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "customerId";
+        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
+        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
+        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
+
+        // Create Sort and Pageable
+        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        // Build the specification
+        Specification<CustomerEntity> spec = Specification
+                .where(CustomerSpecifications.customerId(criteria.getCustomerId()))
+                .and(CustomerSpecifications.customerNameLike(criteria.getCustomerName()))
+                .and(CustomerSpecifications.addressLike(criteria.getAddress()))
+                .and(CustomerSpecifications.cityCountyLike(criteria.getCityCounty()))
+                .and(CustomerSpecifications.zip(criteria.getZip()))
+                .and(CustomerSpecifications.emailLike(criteria.getEmail()))
+                .and(CustomerSpecifications.phoneNumber(criteria.getPhoneNumber()))
+                .and(CustomerSpecifications.vatNo(criteria.getVatNo()))
+                .and(CustomerSpecifications.lastOrderDateBetween(criteria.getLastOrderStartDate(), criteria.getLastOrderEndDate()));
+
+        // Execute query with pagination
+        Page<CustomerTableInfoDto> dtoPage = customerRepository.findAll(spec, pageable)
+                .map(c -> new CustomerTableInfoDto(
+                        c.getCustomerId(),
+                        c.getName(),
+                        c.getAddress(),
+                        c.getCityCounty(),
+                        c.getZip(),
+                        c.getEmail(),
+                        c.getPhoneNumber(),
+                        c.getVatNo(),
+                        (customerRepository.getCustomerTableInfo().stream()
+                                .filter(dto -> dto.getCustomerId().equals(c.getCustomerId()))
+                                .findFirst()
+                                .map(CustomerTableInfoDto::getLastOrderDate)
+                                .orElse(null))
+                ));
+
+        // Return a PageResponse wrapping the Page<CustomerTableInfoDto>
+        return new PageResponse<>(dtoPage);
     }
 }
