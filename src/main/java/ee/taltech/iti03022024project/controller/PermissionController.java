@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permission added successfully")
     @ApiResponse(responseCode = "409", description = "Permission with this description already exists")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<PermissionDto> createPermission(@RequestBody PermissionDto permissionDto) {
         PermissionDto createdPermission = permissionService.createPermission(permissionDto);
@@ -37,6 +39,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permissions retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no permissions")
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<PermissionDto>> getPermissions() {
         return ResponseEntity.ok(permissionService.getAllPermissions());
@@ -48,6 +51,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permission retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Permission with this ID does not exist")
+    //@PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<PermissionDto> getPermission(@PathVariable Integer id) {
         return permissionService.getPermissionById(id)

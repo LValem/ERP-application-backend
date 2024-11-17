@@ -27,6 +27,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle added successfully")
     @ApiResponse(responseCode = "409", description = "Vehicle with this registration plate already exists")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<VehicleDto> createVehicle(@RequestBody VehicleDto vehicleDto) {
         VehicleDto createdVehicle = vehicleService.createVehicle(vehicleDto);
@@ -39,6 +40,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicles retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no vehicles")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<VehicleDto>> getVehicles() {
         return ResponseEntity.ok(vehicleService.getAllVehicles());
@@ -50,6 +52,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Vehicle with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping("/{id}")
     public ResponseEntity<VehicleDto> getVehicle(@PathVariable Integer id) {
         return vehicleService.getVehicleById(id)
@@ -63,7 +66,7 @@ public class VehicleController {
     )
     @ApiResponse(responseCode = "200", description = "Vehicle updated successfully")
     @ApiResponse(responseCode = "404", description = "Vehicle with this ID does not exist")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<VehicleDto> updateVehicle(
             @PathVariable Integer id,

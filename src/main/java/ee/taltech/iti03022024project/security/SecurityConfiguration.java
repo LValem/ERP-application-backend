@@ -1,9 +1,11 @@
 package ee.taltech.iti03022024project.security;
 
+import ee.taltech.iti03022024project.exception.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,9 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @RequiredArgsConstructor
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -29,12 +33,11 @@ public class SecurityConfiguration {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
-//                        .requestMatchers("/api/vehicles/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/api/employees").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/api/employees/").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedHandler(accessDeniedHandler)
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // lisa tagasi kui Token töötab
         return http.build();

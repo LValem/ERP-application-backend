@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customer created successfully")
     @ApiResponse(responseCode = "409", description = "Customer with this name already exists")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto) {
         CustomerDto createdCustomer = customerService.createCustomer(customerDto);
@@ -40,6 +42,7 @@ public class CustomerController {
             description = "Fetches all customers and returns a list of customer DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<CustomerDto>> getAllCustomers() {
         List<CustomerDto> customers = customerService.getAllCustomers();
@@ -52,6 +55,7 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customer retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Customer with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Integer id) {
         return customerService.getCustomerById(id)
@@ -66,6 +70,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "200", description = "Customer updated successfully")
     @ApiResponse(responseCode = "404", description = "Customer with this ID does not exist")
     @ApiResponse(responseCode = "409", description = "Customer with the new name already exists")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDto customerDto) {
         customerDto.setCustomerId(id);
