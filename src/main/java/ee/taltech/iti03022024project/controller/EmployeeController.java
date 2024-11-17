@@ -26,7 +26,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee added successfully")
     @ApiResponse(responseCode = "409", description = "Employee with this name already exists")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("/api/employees")
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeDto createEmployeeDto) {
         EmployeeDto createdEmployee = employeeService.createEmployee(createEmployeeDto);
@@ -39,7 +39,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employees retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no employees")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/api/employees")
     public ResponseEntity<List<EmployeeDto>> getEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
@@ -51,6 +51,7 @@ public class EmployeeController {
     )
     @ApiResponse(responseCode = "200", description = "Employee retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Employee with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Integer id) {
         return employeeService.getEmployeeById(id)
@@ -63,8 +64,6 @@ public class EmployeeController {
             description = "w"
     )
     @PutMapping("/api/employees/{id}")
-//    // hiljem lisaks et ainutl admin saab muuta
-//    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Integer id,
                                                       @RequestBody UpdateEmployeeRequest request) {
@@ -73,7 +72,7 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/api/employees/table")
     public List<EmployeeTableInfoDto> getEmployeeTableInfo() {
         return employeeService.getEmployeeTableInfo();

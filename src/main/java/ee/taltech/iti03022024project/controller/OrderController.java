@@ -29,6 +29,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order created successfully")
     @ApiResponse(responseCode = "404", description = "Customer not found")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
         OrderDto createdOrder = orderService.createOrder(orderDto);
@@ -40,6 +41,7 @@ public class OrderController {
             description = "Fetches all orders and returns a list of order DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         List<OrderDto> orders = orderService.getAllOrders();
@@ -52,6 +54,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Order with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Integer id) {
         return orderService.getOrderById(id)
@@ -65,6 +68,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @ApiResponse(responseCode = "404", description = "Order or customer not found")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Integer id, @RequestBody OrderDto orderDto) {
         orderDto.setOrderId(id);
