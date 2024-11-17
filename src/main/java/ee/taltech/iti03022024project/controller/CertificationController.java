@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class CertificationController {
     @ApiResponse(responseCode = "200", description = "Certification created successfully")
     @ApiResponse(responseCode = "404", description = "Certification type or employee not found")
     @ApiResponse(responseCode = "409", description = "Certification with this type already exists for the employee")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CertificationDto> createCertification(@RequestBody CertificationDto certificationDto) {
         CertificationDto createdCertification = certificationService.createCertification(certificationDto);
@@ -37,6 +39,7 @@ public class CertificationController {
             description = "Fetches all certifications and returns a list of certification DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Certifications retrieved successfully")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<CertificationDto>> getAllCertifications() {
         List<CertificationDto> certifications = certificationService.getAllCertifications();
@@ -49,6 +52,7 @@ public class CertificationController {
     )
     @ApiResponse(responseCode = "200", description = "Certification retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Certification with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<CertificationDto> getCertificationById(@PathVariable Integer id) {
         return certificationService.getCertificationById(id)
@@ -63,6 +67,7 @@ public class CertificationController {
     @ApiResponse(responseCode = "200", description = "Certification updated successfully")
     @ApiResponse(responseCode = "404", description = "Certification or certification type not found")
     @ApiResponse(responseCode = "409", description = "Duplicate certification with the same type already exists")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<CertificationDto> updateCertification(@PathVariable Integer id, @RequestBody CertificationDto certificationDto) {
         certificationDto.setCertificationId(id);

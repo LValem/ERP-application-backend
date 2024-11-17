@@ -26,7 +26,7 @@ public class CertificationTypeController {
     )
     @ApiResponse(responseCode = "200", description = "Certification type added successfully")
     @ApiResponse(responseCode = "409", description = "Certification type with this name already exists")
-    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CertificationTypeDto> createCertificationType(@RequestBody CertificationTypeDto certificationTypeDto) {
         CertificationTypeDto createdType = certificationTypeService.createCertificationType(certificationTypeDto);
@@ -38,7 +38,7 @@ public class CertificationTypeController {
             description = "Fetches all certification types and returns a list of DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Certification types retrieved successfully")
-    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<CertificationTypeDto>> getAllCertificationTypes() {
         return ResponseEntity.ok(certificationTypeService.getAllCertificationTypes());
@@ -50,7 +50,7 @@ public class CertificationTypeController {
     )
     @ApiResponse(responseCode = "200", description = "Certification type retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Certification type with this ID does not exist")
-    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<CertificationTypeDto> getCertificationTypeById(@PathVariable Integer id) {
         return certificationTypeService.getCertificationTypeById(id)
@@ -65,7 +65,7 @@ public class CertificationTypeController {
     @ApiResponse(responseCode = "200", description = "Certification type updated successfully")
     @ApiResponse(responseCode = "404", description = "Certification type with this ID does not exist")
     @ApiResponse(responseCode = "409", description = "Certification type with the new name already exists")
-    @PreAuthorize("hasAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<CertificationTypeDto> updateCertificationType(@PathVariable Integer id, @RequestBody CertificationTypeDto certificationTypeDto) {
         certificationTypeDto.setCertificationTypeId(id);

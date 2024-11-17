@@ -35,4 +35,13 @@ public class ErrorHandler {
         log.error("Login failed, Username or password is incorrect!");
         return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException e) {
+        log.error("Access denied, user doesn't have correct permissions!", e);
+        return new ResponseEntity<>(
+                new ErrorResponse("Access denied: You do not have permission to access this resource"),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

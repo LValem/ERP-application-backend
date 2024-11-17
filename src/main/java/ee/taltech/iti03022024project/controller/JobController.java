@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job created successfully")
     @ApiResponse(responseCode = "404", description = "Related entity (vehicle, employee, or order) not found")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<JobDto> createJob(@RequestBody JobDto jobDto) {
         JobDto createdJob = jobService.createJob(jobDto);
@@ -36,6 +38,7 @@ public class JobController {
             description = "Fetches all jobs and returns a list of job DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Jobs retrieved successfully")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<JobDto>> getAllJobs() {
         List<JobDto> jobs = jobService.getAllJobs();
@@ -48,6 +51,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Job with this ID does not exist")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping("/{id}")
     public ResponseEntity<JobDto> getJobById(@PathVariable Integer id) {
         return jobService.getJobById(id)
@@ -61,6 +65,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job updated successfully")
     @ApiResponse(responseCode = "404", description = "Job or related entity not found")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @PutMapping("/{id}")
     public ResponseEntity<JobDto> updateJob(@PathVariable Integer id, @RequestBody JobDto jobDto) {
         jobDto.setJobId(id);
