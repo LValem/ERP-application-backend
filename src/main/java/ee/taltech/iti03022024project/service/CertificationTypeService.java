@@ -1,12 +1,20 @@
 package ee.taltech.iti03022024project.service;
 
 import ee.taltech.iti03022024project.dto.CertificationTypeDto;
+import ee.taltech.iti03022024project.dto.PageResponse;
+import ee.taltech.iti03022024project.dto.searchcriteria.CertificationTypeSearchCriteria;
 import ee.taltech.iti03022024project.entity.CertificationTypeEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;
 import ee.taltech.iti03022024project.exception.NotFoundException;
 import ee.taltech.iti03022024project.mapping.CertificationTypeMapping;
 import ee.taltech.iti03022024project.repository.CertificationTypeRepository;
+import ee.taltech.iti03022024project.repository.specifications.CertificationTypeSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,5 +60,34 @@ public class CertificationTypeService {
 
         CertificationTypeEntity updatedCertificationType = certificationTypeRepository.save(certificationTypeEntity);
         return Optional.of(certificationTypeMapping.certificationTypeToDto(updatedCertificationType));
+    }
+
+    public PageResponse<CertificationTypeDto> searchCertificationTypes(CertificationTypeSearchCriteria criteria) {
+        // Default sorting and pagination
+        String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "certificationTypeId";
+        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "ASC";
+        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
+        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
+
+        // Create Sort and Pageable
+        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        // Build the specification
+        Specification<CertificationTypeEntity> spec = Specification
+                .where(CertificationTypeSpecifications.certificationTypeId(criteria.getCertificationTypeId()))
+                .and(CertificationTypeSpecifications.certificationNameLike(criteria.getCertificationName()));
+
+        // Execute query with pagination
+        Page<CertificationTypeEntity> certificationTypePage = certificationTypeRepository.findAll(spec, pageable);
+
+        // Map Page<CertificationTypeEntity> to Page<CertificationTypeDto>
+        Page<CertificationTypeDto> dtoPage = certificationTypePage.map(certificationType -> new CertificationTypeDto(
+                certificationType.getCertificationTypeId(),
+                certificationType.getCertificationName()
+        ));
+
+        // Return a PageResponse wrapping the Page<CertificationTypeDto>
+        return new PageResponse<>(dtoPage);
     }
 }

@@ -8,6 +8,7 @@ import ee.taltech.iti03022024project.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,6 +41,7 @@ public class OrderController {
             description = "Fetches all orders and returns a list of order DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "There are no orders")
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         List<OrderDto> orders = orderService.getAllOrders();
@@ -73,9 +75,15 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(
+            summary = "Search for orders in table view",
+            description = "Search orders by criteria, sort, and return a paginated table view"
+    )
+    @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "There are no orders")
     @PostMapping("/table")
     @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
-    public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@RequestBody(required = false) OrderSearchCriteria criteria) {
+    public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@Valid @RequestBody(required = false) OrderSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new OrderSearchCriteria();
         }

@@ -7,7 +7,16 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class OrderSearchCriteria {
+public class NotDoneJobSearchCriteria {
+
+    @PositiveOrZero
+    private Integer jobId;
+
+    @PositiveOrZero
+    private Integer vehicleId;
+
+    @Size(max = 20)
+    private String registrationPlate;
 
     @PositiveOrZero
     private Integer orderId;
@@ -19,30 +28,6 @@ public class OrderSearchCriteria {
     private LocalDateTime pickupEndDate;
     private LocalDateTime dropOffStartDate;
     private LocalDateTime dropOffEndDate;
-
-    @PositiveOrZero
-    private Integer minWeight;
-
-    @PositiveOrZero
-    private Integer maxWeight;
-
-    @PositiveOrZero
-    private Integer minLength;
-
-    @PositiveOrZero
-    private Integer maxLength;
-
-    @PositiveOrZero
-    private Integer minWidth;
-
-    @PositiveOrZero
-    private Integer maxWidth;
-
-    @PositiveOrZero
-    private Integer minHeight;
-
-    @PositiveOrZero
-    private Integer maxHeight;
 
     // Pagination and sorting
     private Integer page;

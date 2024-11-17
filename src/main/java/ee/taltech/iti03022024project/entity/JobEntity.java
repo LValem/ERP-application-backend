@@ -13,6 +13,17 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "job")
 public class JobEntity {
+
+    public JobEntity(Integer jobId, VehicleEntity vehicle, EmployeeEntity employee, OrderEntity order, LocalDateTime pickupDate, LocalDateTime dropOffDate, Boolean isComplete) {
+        this.jobId = jobId;
+        this.vehicle = vehicle;
+        this.employee = employee;
+        this.order = order;
+        this.pickupDate = pickupDate;
+        this.dropOffDate = dropOffDate;
+        this.isComplete = isComplete;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer jobId;
@@ -34,4 +45,7 @@ public class JobEntity {
     private LocalDateTime dropOffDate;
 
     private Boolean isComplete;
+
+    @OneToOne(mappedBy = "job")
+    private FuelConsumptionEntity fuelConsumption;
 }

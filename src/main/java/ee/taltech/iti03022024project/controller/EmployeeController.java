@@ -2,6 +2,7 @@ package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.*;
 import ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.EmployeeSearchCriteria;
 import ee.taltech.iti03022024project.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -72,6 +73,22 @@ public class EmployeeController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+//    @Operation(
+//            summary = "Search for employees in table view",
+//            description = "Search employees by criteria, sort, and return a paginated table view."
+//    )
+//    @ApiResponse(responseCode = "200", description = "Employees retrieved successfully")
+//    @ApiResponse(responseCode = "404", description = "There are no employees")
+//    @PreAuthorize("hasAnyAuthority('USER')")
+//    @PostMapping("/table/search")
+//    public ResponseEntity<PageResponse<EmployeeTableInfoDto>> searchEmployees(@RequestBody(required = false) EmployeeSearchCriteria criteria) {
+//        if (criteria == null) {
+//            criteria = new EmployeeSearchCriteria();
+//        }
+//        PageResponse<EmployeeTableInfoDto> response = employeeService.searchEmployees(criteria);
+//        return ResponseEntity.ok(response);
+//    }
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @GetMapping("/api/employees/table")
