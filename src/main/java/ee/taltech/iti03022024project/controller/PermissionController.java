@@ -1,6 +1,6 @@
 package ee.taltech.iti03022024project.controller;
 
-import ee.taltech.iti03022024project.dto.PermissionDto;
+import ee.taltech.iti03022024project.dto.employee.PermissionDto;
 import ee.taltech.iti03022024project.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +26,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permission added successfully")
     @ApiResponse(responseCode = "409", description = "Permission with this description already exists")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<PermissionDto> createPermission(@RequestBody PermissionDto permissionDto) {
@@ -39,6 +40,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permissions retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no permissions")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     //@PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<PermissionDto>> getPermissions() {
@@ -51,6 +53,7 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "Permission retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Permission with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     //@PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<PermissionDto> getPermission(@PathVariable Integer id) {

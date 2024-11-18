@@ -1,6 +1,6 @@
 package ee.taltech.iti03022024project.mapping;
 
-import ee.taltech.iti03022024project.dto.PermissionDto;
+import ee.taltech.iti03022024project.dto.employee.PermissionDto;
 import ee.taltech.iti03022024project.entity.PermissionEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

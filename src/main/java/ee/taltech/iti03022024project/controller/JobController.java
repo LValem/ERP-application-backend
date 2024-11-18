@@ -33,6 +33,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job created successfully")
     @ApiResponse(responseCode = "404", description = "Related entity (vehicle, employee, or order) not found")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<JobDto> createJob(@RequestBody JobDto jobDto) {
@@ -45,6 +46,7 @@ public class JobController {
             description = "Fetches all jobs and returns a list of job DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Jobs retrieved successfully")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping
     public ResponseEntity<List<JobDto>> getAllJobs() {
@@ -58,6 +60,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Job with this ID does not exist")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @GetMapping("/{id}")
     public ResponseEntity<JobDto> getJobById(@PathVariable Integer id) {
@@ -72,6 +75,7 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Job updated successfully")
     @ApiResponse(responseCode = "404", description = "Job or related entity not found")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
     @PutMapping("/{id}")
     public ResponseEntity<JobDto> updateJob(@PathVariable Integer id, @RequestBody JobDto jobDto) {
@@ -86,6 +90,7 @@ public class JobController {
             description = "Fetches a paginated and filtered list of done jobs based on search criteria."
     )
     @ApiResponse(responseCode = "200", description = "Done jobs retrieved successfully")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PostMapping("/done-table")
     public ResponseEntity<PageResponse<DoneJobTableInfoDto>> searchDoneJobs(@Valid @RequestBody(required = false) DoneJobSearchCriteria criteria) {
         if (criteria == null) {
@@ -100,6 +105,7 @@ public class JobController {
             description = "Fetches a paginated and filtered list of not done jobs based on search criteria."
     )
     @ApiResponse(responseCode = "200", description = "Not done jobs retrieved successfully")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PostMapping("/not-done-table")
     public ResponseEntity<PageResponse<NotDoneJobTableInfoDto>> searchNotDoneJobs(@Valid @RequestBody(required = false) NotDoneJobSearchCriteria criteria) {
         if (criteria == null) {
