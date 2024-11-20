@@ -55,18 +55,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 .getPayload();
     }
 
-//    private Authentication buildAuthToken(Claims tokenBody) {
-//        return new UsernamePasswordAuthenticationToken(tokenBody.getSubject(),
-//                null, List.of(new SimpleGrantedAuthority("DEFAULT USER")));
-//    }
-
     private Authentication buildAuthToken(Claims tokenBody) {
         String username = tokenBody.get("name", String.class);
-        Integer permissionId = tokenBody.get("permissionID", Integer.class);
-        System.out.println(permissionId);
+        Integer permissionId = tokenBody.get("permissionId", Integer.class);
 
         String role = mapPermissionIdToRole(permissionId);
-        System.out.println(role);
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 

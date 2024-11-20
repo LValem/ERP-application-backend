@@ -85,7 +85,7 @@ public class VehicleService {
             vehicleEntity.setCurrentFuel(currentFuel);
         }
 
-        if (registrationPlate != null) {
+        if (registrationPlate != null && !registrationPlate.equals(getVehicleById(id).get().getRegistrationPlate())) {
             if (!vehicleRepository.existsByRegistrationPlate(registrationPlate)) {
                 if (registrationPlate.length() == 6) {
                     vehicleEntity.setRegistrationPlate(registrationPlate);

@@ -75,7 +75,7 @@ public class EmployeeController {
     @PutMapping("/api/employees/{id}")
     public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Integer id,
                                                       @RequestBody UpdateEmployeeRequest request) {
-        return employeeService.updateEmployee(id, request.getName(), request.getPermissionID(), request.getPassword())
+        return employeeService.updateEmployee(id, request.getName(), request.getPermissionId(), request.getPassword())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

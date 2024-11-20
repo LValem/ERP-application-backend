@@ -82,7 +82,10 @@ public class EmployeeService {
         return employeeEntity.map(employeeMapping::employeeToDto);
     }
 
-    public Optional<EmployeeDto> updateEmployee(Integer id, String name, Integer permissionID, String password) {
+    public Optional<EmployeeDto> updateEmployee(Integer id, String name, Integer permissionId, String password) {
+        System.out.println(name);
+        System.out.println(permissionId);
+        System.out.println(password);
         log.info("Attempting to update employee with ID: {}", id);
 
         // Find the employee by ID
@@ -94,19 +97,21 @@ public class EmployeeService {
 
         // Update fields if the new values are provided (not null)
         if (name != null) {
-            if (!name.isEmpty() && !employeeRepository.existsByNameIgnoreCase(name)) {
-                employeeEntity.setName(name);
-            } else {
-                throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
+            if (!Objects.equals(getEmployeeById(id).get().getName(), name)) {
+                if (!name.isEmpty() && !employeeRepository.existsByNameIgnoreCase(name)) {
+                    employeeEntity.setName(name);
+                } else {
+                    throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
+                }
             }
         }
 
         ValueRange range = ValueRange.of(1, 3);
-        if (permissionID != null) {
-            if (range.isValidIntValue(permissionID)) {
-                employeeEntity.setPermissionId(permissionID);
+        if (permissionId != null) {
+            if (range.isValidIntValue(permissionId)) {
+                employeeEntity.setPermissionId(permissionId);
             } else {
-                throw new WrongValueException(permissionID + " is not a real PermissionID!");
+                throw new WrongValueException(permissionId + " is not a real PermissionID!");
             }
         }
 
@@ -178,9 +183,9 @@ public class EmployeeService {
         return Jwts.builder()
                 .subject(employeeEntity.getName())
                 .claims(Map.of(
-                        "employeeID", employeeEntity.getEmployeeId(),
+                        "employeeId", employeeEntity.getEmployeeId(),
                         "name", employeeEntity.getName(),
-                        "permissionID", employeeEntity.getPermissionId()
+                        "permissionId", employeeEntity.getPermissionId()
                 ))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours

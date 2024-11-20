@@ -72,11 +72,14 @@ public class CertificationTypeService {
         CertificationTypeEntity certificationTypeEntity = certificationTypeEntityOpt
                 .orElseThrow(() -> new NotFoundException("Certification type with this ID does not exist"));
 
-        if (!certificationTypeDto.getCertificationName().isEmpty() && !certificationTypeRepository.existsByCertificationNameIgnoreCase(certificationTypeDto.getCertificationName())) {
-            certificationTypeEntity.setCertificationName(certificationTypeDto.getCertificationName());
-        } else {
-            throw new AlreadyExistsException("Cannot change name to " + certificationTypeDto.getCertificationName() + ", because it already exists!");
+        if (certificationTypeDto.getCertificationName() != null && !certificationTypeDto.getCertificationName().equals(getCertificationTypeById(certificationTypeDto.getCertificationTypeId()).get().getCertificationName())) {
+            if (!certificationTypeDto.getCertificationName().isEmpty() && !certificationTypeRepository.existsByCertificationNameIgnoreCase(certificationTypeDto.getCertificationName())) {
+                certificationTypeEntity.setCertificationName(certificationTypeDto.getCertificationName());
+            } else {
+                throw new AlreadyExistsException("Cannot change name to " + certificationTypeDto.getCertificationName() + ", because it already exists!");
+            }
         }
+
 
         CertificationTypeEntity updatedCertificationType = certificationTypeRepository.save(certificationTypeEntity);
 
