@@ -33,7 +33,7 @@ public class EmployeeService {
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     public EmployeeDto createEmployee(CreateEmployeeDto createEmployeeDto) {
-        log.info("Attempting to create employee with name: {}", createEmployeeDto.getName());
+        log.info("Attempting to create employee with name: {} and permissionID: {}", createEmployeeDto.getName(), createEmployeeDto.getPermissionId());
 
         if (createEmployeeDto.getName() == null || createEmployeeDto.getName().isEmpty()
                 || createEmployeeDto.getPassword() == null || createEmployeeDto.getPassword().isEmpty()) {
@@ -45,10 +45,8 @@ public class EmployeeService {
         }
 
         Integer permissionId = createEmployeeDto.getPermissionId();
-        if (permissionId != null && (permissionId < 1 || permissionId > 3)) {
+        if (permissionId == null || (permissionId < 1 || permissionId > 3)) {
             throw new WrongValueException("Permission ID must be between 1 and 3");
-        } else {
-            permissionId = 2;
         }
 
         String hashPassword = passwordEncoder.encode(createEmployeeDto.getPassword());

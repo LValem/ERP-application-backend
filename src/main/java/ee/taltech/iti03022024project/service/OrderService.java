@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024project.service;
 
 import ee.taltech.iti03022024project.dto.OrderDto;
+import ee.taltech.iti03022024project.dto.OrderNameIdDto;
 import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.query.OrdersTableInfoDto;
 import ee.taltech.iti03022024project.dto.searchcriteria.OrderSearchCriteria;
@@ -122,5 +123,10 @@ public class OrderService {
 
         log.info("Found {} orders matching the criteria.", dtoPage.getTotalElements());
         return new PageResponse<>(dtoPage);
+    }
+
+    public List<OrderNameIdDto> getOrdersWithoutJob() {
+        log.info("Fetched orders that don't have a job associated with them.");
+        return orderRepository.getOrdersWithoutJob();
     }
 }

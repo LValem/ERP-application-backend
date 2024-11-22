@@ -17,7 +17,7 @@ public class EmployeeTableInfoDto {
     @Schema(description = "Name of the employee", example = "John Doe")
     private String employeeName;
 
-    @Schema(description = "Description of the permission associated with the employee", example = "DEFAULT USER")
+    @Schema(description = "Description of the permission associated with the employee", example = "USER")
     private String permissionDescription;
 
     @Schema(description = "List of certification names under the certification type", example = "['B', 'CE']")

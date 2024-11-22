@@ -30,7 +30,6 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customer created successfully")
     @ApiResponse(responseCode = "409", description = "Customer with this name already exists")
-    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto) {
@@ -43,7 +42,6 @@ public class CustomerController {
             description = "Fetches all customers and returns a list of customer DTOs."
     )
     @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
-    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<CustomerDto>> getAllCustomers() {
@@ -57,7 +55,6 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customer retrieved successfully")
     @ApiResponse(responseCode = "404", description = "Customer with this ID does not exist")
-    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Integer id) {
@@ -73,7 +70,6 @@ public class CustomerController {
     @ApiResponse(responseCode = "200", description = "Customer updated successfully")
     @ApiResponse(responseCode = "404", description = "Customer with this ID does not exist")
     @ApiResponse(responseCode = "409", description = "Customer with the new name already exists")
-    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDto customerDto) {
@@ -89,7 +85,6 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
     @ApiResponse(responseCode = "404", description = "No customers found")
-    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PostMapping("/table")
     public ResponseEntity<PageResponse<CustomerTableInfoDto>> searchCustomerTable(@Valid @RequestBody(required = false) CustomerSearchCriteria criteria) {
         if (criteria == null) {
