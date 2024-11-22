@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024project.controller;
 
 import ee.taltech.iti03022024project.dto.OrderDto;
+import ee.taltech.iti03022024project.dto.OrderNameIdDto;
 import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.query.OrdersTableInfoDto;
 import ee.taltech.iti03022024project.dto.searchcriteria.OrderSearchCriteria;
@@ -91,12 +92,26 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "There are no orders")
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @PostMapping("/table")
-    @PreAuthorize("hasAnyAuthority('DEFAULT USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@Valid @RequestBody(required = false) OrderSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new OrderSearchCriteria();
         }
         PageResponse<OrdersTableInfoDto> response = orderService.searchOrdersTable(criteria);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Search for orders that don't have a job associated with them",
+            description = "Search orders that don't have a job associated with them"
+    )
+    @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "There are no orders")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
+    @GetMapping("/without-job")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public ResponseEntity<List<OrderNameIdDto>> getOrdersWithoutJob() {
+        List<OrderNameIdDto> orders = orderService.getOrdersWithoutJob();
+        return ResponseEntity.ok(orders);
     }
 }

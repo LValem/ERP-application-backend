@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Schema(description = "Data Transfer Object for vehicle information")
 public class VehicleDto {
+    @Schema(description = "Vehicle id", example = "1")
+    private Integer vehicleId;
     @Schema(description = "Type of the vehicle", example = "K")
     private Character vehicleType;
     @Schema(description = "Indicates if the vehicle is in use", example = "False")

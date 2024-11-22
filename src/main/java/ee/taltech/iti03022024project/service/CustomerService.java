@@ -106,17 +106,21 @@ public class CustomerService {
     public PageResponse<CustomerTableInfoDto> searchCustomerTable(CustomerSearchCriteria criteria) {
         log.info("Searching customers with criteria: {}", criteria);
 
-        // Default sorting and pagination
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "customerId";
+        switch (sortBy) {
+            case "customerName": sortBy = "name"; break;
+            case "lastOrderDate": sortBy = "MAX(o.dropOffDate)"; break;
+            default: break;
+        }
+
         String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
+
         int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
         int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
-
-        // Create Sort and Pageable
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        // Build the specification
+        // Build specification
         Specification<CustomerEntity> spec = Specification
                 .where(CustomerSpecifications.customerId(criteria.getCustomerId()))
                 .and(CustomerSpecifications.customerNameLike(criteria.getCustomerName()))
@@ -128,26 +132,8 @@ public class CustomerService {
                 .and(CustomerSpecifications.vatNo(criteria.getVatNo()))
                 .and(CustomerSpecifications.lastOrderDateBetween(criteria.getLastOrderStartDate(), criteria.getLastOrderEndDate()));
 
-        // Execute query with pagination
-        Page<CustomerTableInfoDto> dtoPage = customerRepository.findAll(spec, pageable)
-                .map(c -> new CustomerTableInfoDto(
-                        c.getCustomerId(),
-                        c.getName(),
-                        c.getAddress(),
-                        c.getCityCounty(),
-                        c.getZip(),
-                        c.getEmail(),
-                        c.getPhoneNumber(),
-                        c.getVatNo(),
-                        (customerRepository.getCustomerTableInfo().stream()
-                                .filter(dto -> dto.getCustomerId().equals(c.getCustomerId()))
-                                .findFirst()
-                                .map(CustomerTableInfoDto::getLastOrderDate)
-                                .orElse(null))
-                ));
-
+        Page<CustomerTableInfoDto> dtoPage = customerRepository.getCustomerTableInfo(spec, pageable);
         log.info("Search completed. Found {} customers.", dtoPage.getTotalElements());
-        // Return a PageResponse wrapping the Page<CustomerTableInfoDto>
         return new PageResponse<>(dtoPage);
     }
 }

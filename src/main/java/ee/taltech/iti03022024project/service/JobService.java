@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024project.service;
 
 import ee.taltech.iti03022024project.dto.JobDto;
+import ee.taltech.iti03022024project.dto.OrderNameIdDto;
 import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.query.DoneJobTableInfoDto;
 import ee.taltech.iti03022024project.dto.query.NotDoneJobTableInfoDto;
@@ -44,6 +45,9 @@ public class JobService {
     private static final Logger log = LoggerFactory.getLogger(JobService.class);
 
     public JobDto createJob(JobDto jobDto) {
+        System.out.println("vehicle id" + jobDto.getVehicleId());
+        System.out.println("job id" + jobDto.getEmployeeId());
+        System.out.println("order id" + jobDto.getOrderId());
         VehicleEntity vehicle = vehicleRepository.findById(jobDto.getVehicleId())
                 .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + " does not exist."));
         EmployeeEntity employee = employeeRepository.findById(jobDto.getEmployeeId())
@@ -55,6 +59,10 @@ public class JobService {
         jobEntity.setVehicle(vehicle);
         jobEntity.setEmployee(employee);
         jobEntity.setOrder(order);
+
+        if (jobEntity.getIsComplete() == null) {
+            jobEntity.setIsComplete(false);
+        }
 
         JobEntity savedJob = jobRepository.save(jobEntity);
 
@@ -115,8 +123,17 @@ public class JobService {
     }
 
     public PageResponse<DoneJobTableInfoDto> searchDoneJobsTable(DoneJobSearchCriteria criteria) {
-        // Default sorting and pagination
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "jobId";
+        switch (sortBy) {
+            case "vehicleId": sortBy = "vehicle.vehicleId"; break;
+            case "registrationPlate": sortBy = "vehicle.registrationPlate"; break;
+            case "fuelUsed": sortBy = "fc.fuelUsed"; break;
+            case "distanceDriven": sortBy = "fc.distanceDriven"; break;
+            case "orderId": sortBy = "order.orderId"; break;
+            case "customerName": sortBy = "order.customer.name"; break;
+            default: break;
+        }
+
         String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
         int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
         int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
@@ -134,34 +151,25 @@ public class JobService {
                 .and(DoneJobSpecifications.customerNameLike(criteria.getCustomerName()))
                 .and(DoneJobSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
                 .and(DoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
-                .and(DoneJobSpecifications.fuelUsedBetween(criteria.getMinFuelUsed(), criteria.getMaxFuelUsed()));
+                .and(DoneJobSpecifications.fuelUsedBetween(criteria.getMinFuelUsed(), criteria.getMaxFuelUsed()))
+                .and((root, query, builder) -> builder.isTrue(root.get("isComplete")));
 
         // Execute query with pagination
-        Page<JobEntity> jobPage = jobRepository.findAll(spec, pageable);
-
-        // Map Page<JobEntity> to Page<DoneJobTableInfoDto>
-        Page<DoneJobTableInfoDto> dtoPage = jobPage.map(job -> new DoneJobTableInfoDto(
-                job.getJobId(),
-                job.getVehicle().getVehicleId(),
-                job.getVehicle().getRegistrationPlate(),
-                job.getFuelConsumption() != null ? job.getFuelConsumption().getFuelUsed() : null,
-                job.getFuelConsumption() != null ? job.getFuelConsumption().getDistanceDriven() : null,
-                job.getOrder().getOrderId(),
-                job.getOrder().getCustomer().getName(),
-                job.getPickupDate(),
-                job.getDropOffDate(),
-                job.getIsComplete()
-        ));
-
+        Page<DoneJobTableInfoDto> dtoPage = jobRepository.findAllDoneJobTableInfo(spec, pageable);
         log.info("Fetched {} done jobs based on search criteria.", dtoPage.getTotalElements());
-
-        // Return a PageResponse wrapping the Page<DoneJobTableInfoDto>
         return new PageResponse<>(dtoPage);
     }
 
     public PageResponse<NotDoneJobTableInfoDto> searchNotDoneJobsTable(NotDoneJobSearchCriteria criteria) {
-        // Default sorting and pagination
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "jobId";
+        switch (sortBy) {
+            case "vehicleId": sortBy = "vehicle.vehicleId"; break;
+            case "registrationPlate": sortBy = "vehicle.registrationPlate"; break;
+            case "orderId": sortBy = "order.orderId"; break;
+            case "customerName": sortBy = "order.customer.name"; break;
+            default: break;
+        }
+
         String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
         int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
         int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
@@ -178,26 +186,12 @@ public class JobService {
                 .and(NotDoneJobSpecifications.orderId(criteria.getOrderId()))
                 .and(NotDoneJobSpecifications.customerNameLike(criteria.getCustomerName()))
                 .and(NotDoneJobSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
-                .and(NotDoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()));
+                .and(NotDoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
+                .and((root, query, builder) -> builder.isFalse(root.get("isComplete")));
 
         // Execute query with pagination
-        Page<JobEntity> jobPage = jobRepository.findAll(spec, pageable);
-
-        // Map Page<JobEntity> to Page<NotDoneJobTableInfoDto>
-        Page<NotDoneJobTableInfoDto> dtoPage = jobPage.map(job -> new NotDoneJobTableInfoDto(
-                job.getJobId(),
-                job.getVehicle().getVehicleId(),
-                job.getVehicle().getRegistrationPlate(),
-                job.getOrder().getOrderId(),
-                job.getOrder().getCustomer().getName(),
-                job.getPickupDate(),
-                job.getDropOffDate(),
-                job.getIsComplete()
-        ));
-
+        Page<NotDoneJobTableInfoDto> dtoPage = jobRepository.findAllNotDoneJobTableInfo(spec, pageable);
         log.info("Fetched {} not done jobs based on search criteria.", dtoPage.getTotalElements());
-
-        // Return a PageResponse wrapping the Page<NotDoneJobTableInfoDto>
         return new PageResponse<>(dtoPage);
     }
 }

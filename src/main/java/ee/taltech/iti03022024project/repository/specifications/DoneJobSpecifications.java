@@ -35,8 +35,14 @@ public class DoneJobSpecifications {
 
     public static Specification<JobEntity> pickupDateBetween(LocalDateTime start, LocalDateTime end) {
         return (root, query, cb) -> {
-            if (start == null || end == null) return null;
-            return cb.between(root.get("pickupDate"), start, end);
+            if (start == null && end == null) return null;
+            if (start != null && end != null) {
+                return cb.between(root.get("pickupDate"), start, end);
+            } else if (start != null) {
+                return cb.greaterThanOrEqualTo(root.get("pickupDate"), start);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("pickupDate"), end);
+            }
         };
     }
 
@@ -65,4 +71,18 @@ public class DoneJobSpecifications {
             }
         };
     }
+
+    public static Specification<JobEntity> distanceDrivenBetween(Double minDistanceDriven, Double maxDistanceDriven) {
+        return (root, query, cb) -> {
+            if (minDistanceDriven == null && maxDistanceDriven == null) return null;
+            if (minDistanceDriven != null && maxDistanceDriven != null) {
+                return cb.between(root.join("fuelConsumption").get("distanceDriven"), minDistanceDriven, maxDistanceDriven);
+            } else if (minDistanceDriven != null) {
+                return cb.greaterThanOrEqualTo(root.join("fuelConsumption").get("distanceDriven"), minDistanceDriven);
+            } else {
+                return cb.lessThanOrEqualTo(root.join("fuelConsumption").get("distanceDriven"), maxDistanceDriven);
+            }
+        };
+    }
 }
+
