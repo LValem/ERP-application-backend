@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 public class CustomerSpecifications {
 
+    private static final String LAST_ORDER_DATE = "lastOrderDate";
+
     public static Specification<CustomerEntity> customerId(Integer customerId) {
         return (root, query, cb) -> customerId == null ? null : cb.equal(root.get("customerId"), customerId);
     }
@@ -55,11 +57,11 @@ public class CustomerSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("lastOrderDate"), start, end);
+                return cb.between(root.get(LAST_ORDER_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("lastOrderDate"), start);
+                return cb.greaterThanOrEqualTo(root.get(LAST_ORDER_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("lastOrderDate"), end);
+                return cb.lessThanOrEqualTo(root.get(LAST_ORDER_DATE), end);
             }
         };
     }
