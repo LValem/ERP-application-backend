@@ -94,7 +94,9 @@ public class EmployeeService {
                 .orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
 
         // Update fields if the new values are provided (not null)
-        if (name != null && !name.isEmpty() && !Objects.equals(getEmployeeById(id).get().getName(), name)) {
+        Optional<EmployeeDto> employeeOpt = getEmployeeById(id);
+
+        if (name != null && !name.isEmpty() && employeeOpt.isPresent() && !Objects.equals(employeeOpt.get().getName(), name)) {
             if (!employeeRepository.existsByNameIgnoreCase(name)) {
                 employeeEntity.setName(name);
             } else {
