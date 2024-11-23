@@ -74,7 +74,10 @@ public class EmployeeService {
         log.info("Fetching employee with ID: {}", id);
 
         Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
-        employeeEntity.orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
+        // Throw exception if not found
+        if (employeeEntity.isEmpty()) {
+            throw new NotFoundException("Employee with ID: " + id + " does not exist");
+        }
 
         log.info("Successfully fetched employee with ID: {}", id);
         return employeeEntity.map(employeeMapping::employeeToDto);
