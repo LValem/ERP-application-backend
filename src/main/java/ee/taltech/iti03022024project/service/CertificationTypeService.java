@@ -74,7 +74,8 @@ public class CertificationTypeService {
         CertificationTypeEntity certificationTypeEntity = certificationTypeEntityOpt
                 .orElseThrow(() -> new NotFoundException("Certification type with this ID does not exist"));
 
-        if (certificationTypeDto.getCertificationName() != null && !certificationTypeDto.getCertificationName().equals(getCertificationTypeById(certificationTypeDto.getCertificationTypeId()).get().getCertificationName())) {
+        Optional<CertificationTypeDto> certificationTypeOptional = getCertificationTypeById(certificationTypeDto.getCertificationTypeId());
+        if (certificationTypeDto.getCertificationName() != null && certificationTypeOptional.isPresent() && !certificationTypeDto.getCertificationName().equals(certificationTypeOpt.get().getCertificationName())) {
             if (!certificationTypeDto.getCertificationName().isEmpty() && !certificationTypeRepository.existsByCertificationNameIgnoreCase(certificationTypeDto.getCertificationName())) {
                 certificationTypeEntity.setCertificationName(certificationTypeDto.getCertificationName());
             } else {
