@@ -94,13 +94,11 @@ public class EmployeeService {
                 .orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
 
         // Update fields if the new values are provided (not null)
-        if (name != null) {
-            if (!Objects.equals(getEmployeeById(id).get().getName(), name)) {
-                if (!name.isEmpty() && !employeeRepository.existsByNameIgnoreCase(name)) {
-                    employeeEntity.setName(name);
-                } else {
-                    throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
-                }
+        if (name != null && !name.isEmpty() && !Objects.equals(getEmployeeById(id).get().getName(), name)) {
+            if (!employeeRepository.existsByNameIgnoreCase(name)) {
+                employeeEntity.setName(name);
+            } else {
+                throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
             }
         }
 
