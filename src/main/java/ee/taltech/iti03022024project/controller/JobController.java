@@ -6,7 +6,6 @@ import ee.taltech.iti03022024project.dto.query.DoneJobTableInfoDto;
 import ee.taltech.iti03022024project.dto.query.NotDoneJobTableInfoDto;
 import ee.taltech.iti03022024project.dto.searchcriteria.DoneJobSearchCriteria;
 import ee.taltech.iti03022024project.dto.searchcriteria.NotDoneJobSearchCriteria;
-import ee.taltech.iti03022024project.dto.searchcriteria.OrderSearchCriteria;
 import ee.taltech.iti03022024project.service.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
