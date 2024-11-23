@@ -90,32 +90,26 @@ public class CertificationTypeService {
     public PageResponse<CertificationTypeDto> searchCertificationTypes(CertificationTypeSearchCriteria criteria) {
         log.info("Searching certification types with criteria: {}", criteria);
 
-        // Default sorting and pagination
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "certificationTypeId";
         String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "ASC";
         int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
         int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
 
-        // Create Sort and Pageable
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        // Build the specification
         Specification<CertificationTypeEntity> spec = Specification
                 .where(CertificationTypeSpecifications.certificationTypeId(criteria.getCertificationTypeId()))
                 .and(CertificationTypeSpecifications.certificationNameLike(criteria.getCertificationName()));
 
-        // Execute query with pagination
         Page<CertificationTypeEntity> certificationTypePage = certificationTypeRepository.findAll(spec, pageable);
 
-        // Map Page<CertificationTypeEntity> to Page<CertificationTypeDto>
         Page<CertificationTypeDto> dtoPage = certificationTypePage.map(certificationType -> new CertificationTypeDto(
                 certificationType.getCertificationTypeId(),
                 certificationType.getCertificationName()
         ));
 
         log.info("Search completed. Found {} certification types.", dtoPage.getTotalElements());
-        // Return a PageResponse wrapping the Page<CertificationTypeDto>
         return new PageResponse<>(dtoPage);
     }
 }

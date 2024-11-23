@@ -84,5 +84,9 @@ public class DoneJobSpecifications {
             }
         };
     }
+
+    public static Specification<JobEntity> isComplete() {
+        return (root, query, cb) -> cb.isTrue(root.get("isComplete"));
+    }
 }
 

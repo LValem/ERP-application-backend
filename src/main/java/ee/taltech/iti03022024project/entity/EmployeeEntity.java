@@ -27,6 +27,9 @@ public class EmployeeEntity {
     private Integer permissionId;
     private String password;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee")
     private List<CertificationEntity> certifications;
+
+    @OneToMany(mappedBy = "employee")
+    private List<JobEntity> jobs;
 }

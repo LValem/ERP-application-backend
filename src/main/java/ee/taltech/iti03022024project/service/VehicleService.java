@@ -1,6 +1,5 @@
 package ee.taltech.iti03022024project.service;
 
-import ee.taltech.iti03022024project.dto.UpdateVehicleRequestDto;
 import ee.taltech.iti03022024project.dto.VehicleDto;
 import ee.taltech.iti03022024project.entity.VehicleEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;

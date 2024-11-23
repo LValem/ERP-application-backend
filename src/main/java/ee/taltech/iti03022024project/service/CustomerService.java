@@ -106,34 +106,40 @@ public class CustomerService {
     public PageResponse<CustomerTableInfoDto> searchCustomerTable(CustomerSearchCriteria criteria) {
         log.info("Searching customers with criteria: {}", criteria);
 
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 20;
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "customerId";
-        switch (sortBy) {
-            case "customerName": sortBy = "name"; break;
-            case "lastOrderDate": sortBy = "MAX(o.dropOffDate)"; break;
-            default: break;
+        if (sortBy.equals("customerName")) {
+            sortBy = "name";
+        }
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Specification<CustomerEntity> spec = Specification.where(
+                CustomerSpecifications.customerId(criteria.getCustomerId())
+                        .and(CustomerSpecifications.customerNameLike(criteria.getCustomerName()))
+                        .and(CustomerSpecifications.addressLike(criteria.getAddress()))
+                        .and(CustomerSpecifications.cityCountyLike(criteria.getCityCounty()))
+                        .and(CustomerSpecifications.zip(criteria.getZip()))
+                        .and(CustomerSpecifications.emailLike(criteria.getEmail()))
+                        .and(CustomerSpecifications.phoneNumber(criteria.getPhoneNumber()))
+                        .and(CustomerSpecifications.vatNo(criteria.getVatNo()))
+                        .and(CustomerSpecifications.lastOrderDateBetween(criteria.getLastOrderStartDate(), criteria.getLastOrderEndDate()))
+        );
+
+        Pageable pageable;
+        if ("lastOrderDate".equals(criteria.getSortBy())) {
+            spec = spec.and(CustomerSpecifications.sortByLastOrderDate(direction));
+            pageable = PageRequest.of(page, size);
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         }
 
-        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
+        Page<CustomerEntity> customerEntities = customerRepository.findAll(spec, pageable);
+        Page<CustomerTableInfoDto> customerDtos = customerMapping.customerPageToDtoPage(customerEntities, pageable);
 
-        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
-        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
-        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-
-        // Build specification
-        Specification<CustomerEntity> spec = Specification
-                .where(CustomerSpecifications.customerId(criteria.getCustomerId()))
-                .and(CustomerSpecifications.customerNameLike(criteria.getCustomerName()))
-                .and(CustomerSpecifications.addressLike(criteria.getAddress()))
-                .and(CustomerSpecifications.cityCountyLike(criteria.getCityCounty()))
-                .and(CustomerSpecifications.zip(criteria.getZip()))
-                .and(CustomerSpecifications.emailLike(criteria.getEmail()))
-                .and(CustomerSpecifications.phoneNumber(criteria.getPhoneNumber()))
-                .and(CustomerSpecifications.vatNo(criteria.getVatNo()))
-                .and(CustomerSpecifications.lastOrderDateBetween(criteria.getLastOrderStartDate(), criteria.getLastOrderEndDate()));
-
-        Page<CustomerTableInfoDto> dtoPage = customerRepository.getCustomerTableInfo(spec, pageable);
-        log.info("Search completed. Found {} customers.", dtoPage.getTotalElements());
-        return new PageResponse<>(dtoPage);
+        log.info("Fetched {} customers based on search criteria.", customerDtos.getTotalElements());
+        return new PageResponse<>(customerDtos);
     }
 }

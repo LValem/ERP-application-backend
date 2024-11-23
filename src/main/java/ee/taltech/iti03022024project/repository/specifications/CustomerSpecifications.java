@@ -1,6 +1,10 @@
 package ee.taltech.iti03022024project.repository.specifications;
 
 import ee.taltech.iti03022024project.entity.CustomerEntity;
+import ee.taltech.iti03022024project.entity.OrderEntity;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -53,14 +57,42 @@ public class CustomerSpecifications {
 
     public static Specification<CustomerEntity> lastOrderDateBetween(LocalDateTime start, LocalDateTime end) {
         return (root, query, cb) -> {
-            if (start == null && end == null) return null;
+            assert query != null;
+            Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
+            Root<OrderEntity> orderRoot = subquery.from(OrderEntity.class);
+
+            subquery.select(cb.greatest(orderRoot.<LocalDateTime>get("dropOffDate")))
+                    .where(cb.equal(orderRoot.get("customer").get("customerId"), root.get("customerId")));
+
             if (start != null && end != null) {
-                return cb.between(root.get("lastOrderDate"), start, end);
+                return cb.between(subquery, start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("lastOrderDate"), start);
+                return cb.greaterThanOrEqualTo(subquery, start);
+            } else if (end != null) {
+                return cb.lessThanOrEqualTo(subquery, end);
             } else {
-                return cb.lessThanOrEqualTo(root.get("lastOrderDate"), end);
+                return null;
             }
+        };
+    }
+
+    public static Specification<CustomerEntity> sortByLastOrderDate(Sort.Direction direction) {
+        return (root, query, cb) -> {
+            // Create a subquery for the greatest dropOffDate
+            assert query != null;
+            Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
+            Root<OrderEntity> orderRoot = subquery.from(OrderEntity.class);
+
+            subquery.select(cb.greatest(orderRoot.<LocalDateTime>get("dropOffDate")))
+                    .where(cb.equal(orderRoot.get("customer").get("customerId"), root.get("customerId")));
+
+            if (direction == Sort.Direction.DESC) {
+                query.orderBy(cb.desc(subquery));
+            } else {
+                query.orderBy(cb.asc(subquery));
+            }
+
+            return null;
         };
     }
 }

@@ -1,7 +1,6 @@
 package ee.taltech.iti03022024project.dto.employee;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

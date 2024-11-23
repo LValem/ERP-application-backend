@@ -35,8 +35,14 @@ public class NotDoneJobSpecifications {
 
     public static Specification<JobEntity> pickupDateBetween(LocalDateTime start, LocalDateTime end) {
         return (root, query, cb) -> {
-            if (start == null || end == null) return null;
-            return cb.between(root.get("pickupDate"), start, end);
+            if (start == null && end == null) return null;
+            if (start != null && end != null) {
+                return cb.between(root.get("order").get("pickupDate"), start, end);
+            } else if (start != null) {
+                return cb.greaterThanOrEqualTo(root.get("order").get("pickupDate"), start);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("order").get("pickupDate"), end);
+            }
         };
     }
 
@@ -44,12 +50,16 @@ public class NotDoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("dropOffDate"), start, end);
+                return cb.between(root.get("order").get("dropOffDate"), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("dropOffDate"), start);
+                return cb.greaterThanOrEqualTo(root.get("order").get("dropOffDate"), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("dropOffDate"), end);
+                return cb.lessThanOrEqualTo(root.get("order").get("dropOffDate"), end);
             }
         };
+    }
+
+    public static Specification<JobEntity> isComplete() {
+        return (root, query, cb) -> cb.isFalse(root.get("isComplete"));
     }
 }

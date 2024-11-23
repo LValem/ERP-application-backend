@@ -89,40 +89,34 @@ public class OrderService {
     public PageResponse<OrdersTableInfoDto> searchOrdersTable(OrderSearchCriteria criteria) {
         log.info("Searching orders with criteria: {}", criteria);
 
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 10;
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "orderId";
-        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
-        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
-        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
+        if (sortBy.equals("customerName")) {
+            sortBy = "customer.name";
+        }
 
-        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
 
-        Specification<OrderEntity> spec = Specification
-                .where(OrderSpecifications.orderId(criteria.getOrderId()))
-                .and(OrderSpecifications.customerNameLike(criteria.getCustomerName()))
-                .and(OrderSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
-                .and(OrderSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
-                .and(OrderSpecifications.weightBetween(criteria.getMinWeight(), criteria.getMaxWeight()))
-                .and(OrderSpecifications.lengthBetween(criteria.getMinLength(), criteria.getMaxLength()))
-                .and(OrderSpecifications.widthBetween(criteria.getMinWidth(), criteria.getMaxWidth()))
-                .and(OrderSpecifications.heightBetween(criteria.getMinHeight(), criteria.getMaxHeight()));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<OrderEntity> orderPage = orderRepository.findAll(spec, pageable);
+        Specification<OrderEntity> spec = Specification.where(
+                OrderSpecifications.orderId(criteria.getOrderId())
+                        .and(OrderSpecifications.customerNameLike(criteria.getCustomerName()))
+                        .and(OrderSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
+                        .and(OrderSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
+                        .and(OrderSpecifications.weightBetween(criteria.getMinWeight(), criteria.getMaxWeight()))
+                        .and(OrderSpecifications.lengthBetween(criteria.getMinLength(), criteria.getMaxLength()))
+                        .and(OrderSpecifications.widthBetween(criteria.getMinWidth(), criteria.getMaxWidth()))
+                        .and(OrderSpecifications.heightBetween(criteria.getMinHeight(), criteria.getMaxHeight()))
+        );
 
-        Page<OrdersTableInfoDto> dtoPage = orderPage.map(order -> new OrdersTableInfoDto(
-                order.getOrderId(),
-                order.getCustomer().getName(),
-                order.getPickupDate(),
-                order.getDropOffDate(),
-                order.getWeight(),
-                order.getWidth(),
-                order.getHeight(),
-                order.getLength(),
-                order.getOrderDetails()
-        ));
-
-        log.info("Found {} orders matching the criteria.", dtoPage.getTotalElements());
-        return new PageResponse<>(dtoPage);
+        Page<OrderEntity> orderEntities = orderRepository.findAll(spec, pageable);
+        Page<OrdersTableInfoDto> orderDtos = orderMapping.orderPageToDtoPage(orderEntities, pageable);
+        log.info("Found {} orders matching the criteria.", orderDtos.getTotalElements());
+        return new PageResponse<>(orderDtos);
     }
 
     public List<OrderNameIdDto> getOrdersWithoutJob() {

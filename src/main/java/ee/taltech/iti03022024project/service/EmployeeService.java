@@ -1,25 +1,32 @@
 package ee.taltech.iti03022024project.service;
 
+import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.employee.CreateEmployeeDto;
 import ee.taltech.iti03022024project.dto.employee.EmployeeDto;
 import ee.taltech.iti03022024project.dto.employee.LoginRequestDto;
 import ee.taltech.iti03022024project.dto.employee.LoginResponseDto;
 import ee.taltech.iti03022024project.dto.query.EmployeeTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.EmployeeSearchCriteria;
 import ee.taltech.iti03022024project.entity.EmployeeEntity;
 import ee.taltech.iti03022024project.exception.*;
 import ee.taltech.iti03022024project.mapping.EmployeeMapping;
 import ee.taltech.iti03022024project.repository.EmployeeRepository;
+import ee.taltech.iti03022024project.repository.specifications.EmployeeSpecifications;
 import ee.taltech.iti03022024project.security.ApplicationConfiguration;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ValueRange;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -125,42 +132,48 @@ public class EmployeeService {
         return Optional.of(employeeMapping.employeeToDto(updatedEmployee));
     }
 
-    public List<EmployeeTableInfoDto> getEmployeeTableInfo() {
-        log.info("Fetching employee table information.");
-        List<EmployeeTableInfoDto> result = aggregateEmployeeCertifications(employeeRepository.getEmployeeTableInfo());
-        log.info("Successfully fetched employee table information with {} records.", result.size());
-        return result;
-    }
+    public PageResponse<EmployeeTableInfoDto> searchEmployeeTable(EmployeeSearchCriteria criteria) {
+        log.info("Searching employees with criteria: {}", criteria);
 
-    private List<EmployeeTableInfoDto> aggregateEmployeeCertifications(List<EmployeeTableInfoDto> rawResults) {
-        log.info("Aggregating employee certifications.");
-        Map<String, EmployeeTableInfoDto> aggregatedResults = new HashMap<>();
-
-        for (EmployeeTableInfoDto dto : rawResults) {
-            String key = dto.getEmployeeName() + "-" + dto.getPermissionDescription();
-            EmployeeTableInfoDto aggregatedDto = aggregatedResults.computeIfAbsent(key, k ->
-                    new EmployeeTableInfoDto(
-                            dto.getEmployeeId(),
-                            dto.getEmployeeName(),
-                            dto.getPermissionDescription(),
-                            "",
-                            dto.getLastJobDate()
-                    )
-            );
-            if (dto.getCertificationNames() != null) {
-                Set<String> certifications = new HashSet<>(Arrays.asList(aggregatedDto.getCertificationNames().split(", ")));
-                certifications.add(dto.getCertificationNames());
-                aggregatedDto.setCertificationNames(
-                        certifications.stream().filter(s -> !s.isEmpty()).collect(Collectors.joining(", "))
-                );
-            }
-            if (dto.getLastJobDate() != null &&
-                    (aggregatedDto.getLastJobDate() == null || dto.getLastJobDate().isAfter(aggregatedDto.getLastJobDate()))) {
-                aggregatedDto.setLastJobDate(dto.getLastJobDate());
-            }
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 20;
+        String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "employeeId";
+        if ("employeeName".equals(sortBy)) {
+            sortBy = "name";
         }
-        log.info("Employee certifications aggregated successfully.");
-        return new ArrayList<>(aggregatedResults.values());
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Specification<EmployeeEntity> spec = Specification.where(
+                EmployeeSpecifications.employeeId(criteria.getEmployeeId())
+                        .and(EmployeeSpecifications.employeeNameLike(criteria.getEmployeeName()))
+                        .and(EmployeeSpecifications.permissionDescription(criteria.getPermissionDescription()))
+                        .and(EmployeeSpecifications.certificationNamesLike(criteria.getCertificationNames()))
+                        .and(EmployeeSpecifications.lastJobDateBetween(criteria.getLastJobStartDate(), criteria.getLastJobEndDate()))
+        );
+
+        Pageable pageable;
+        switch (sortBy) {
+            case "lastJobDate" -> {
+                spec = spec.and(EmployeeSpecifications.sortByLastJobDate(direction));
+                pageable = PageRequest.of(page, size);
+            }
+            case "permissionDescription" -> {
+                spec = spec.and(EmployeeSpecifications.sortByPermissionDescription(direction));
+                pageable = PageRequest.of(page, size);
+            }
+            case "certificationNames" -> {
+                spec = spec.and(EmployeeSpecifications.sortByCertificationNames(direction));
+                pageable = PageRequest.of(page, size);
+            }
+            default -> pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        }
+
+        Page<EmployeeEntity> employeeEntities = employeeRepository.findAll(spec, pageable);
+        Page<EmployeeTableInfoDto> employeeDtos = employeeMapping.employeePageToTableInfoDtoPage(employeeEntities, pageable);
+        log.info("Fetched {} employees based on search criteria.", employeeDtos.getTotalElements());
+        return new PageResponse<>(employeeDtos);
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {

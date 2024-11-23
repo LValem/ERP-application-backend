@@ -1,6 +1,5 @@
 package ee.taltech.iti03022024project.security;
 
-import ee.taltech.iti03022024project.entity.EmployeeEntity;
 import io.jsonwebtoken.Jwts;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
