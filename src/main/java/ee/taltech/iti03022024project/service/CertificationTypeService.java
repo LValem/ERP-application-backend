@@ -58,7 +58,9 @@ public class CertificationTypeService {
         log.info("Fetching certification type with ID: {}", id);
 
         Optional<CertificationTypeEntity> certificationTypeEntity = certificationTypeRepository.findById(id);
-        certificationTypeEntity.orElseThrow(() -> new NotFoundException("Certification type with this ID does not exist"));
+        if (certificationTypeEntity.isEmpty()) {
+            throw new NotFoundException("CertificationType with ID " + id + " not found.");
+        }
 
         log.info("Fetched certification type with ID: {}", id);
         return certificationTypeEntity.map(certificationTypeMapping::certificationTypeToDto);
