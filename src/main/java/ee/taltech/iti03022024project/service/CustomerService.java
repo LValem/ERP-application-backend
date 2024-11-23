@@ -71,7 +71,9 @@ public class CustomerService {
         CustomerEntity customerEntity = customerRepository.findById(customerDto.getCustomerId())
                 .orElseThrow(() -> new NotFoundException("Customer with ID " + customerDto.getCustomerId() + " does not exist."));
 
-        if (customerDto.getName() != null && !customerDto.getName().equals(getCustomerById(customerDto.getCustomerId()).get().getName())) {
+        Optional<CustomerDto> customerOpt = getCustomerById(customerDto.getCustomerId());
+
+        if (customerDto.getName() != null && customerOpt.isPresent() && !customerDto.getName().equals(customerOpt.get().getName())) {
             if (!customerRepository.existsByNameIgnoreCase(customerDto.getName())) {
                 customerEntity.setName(customerDto.getName());
             } else {
