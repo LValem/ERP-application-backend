@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class DoneJobSpecifications {
     private static final String PICKUP_DATE = "pickupDate";
-    private static final String DROPOFF_DATE = "dropOffDate";
+    private static final String DROP_OFF_DATE = "dropOffDate";
     private static final String FUEL_CONSUMPTION = "fuelConsumption";
     private static final String FUEL_USED = "fuelUsed";
     private static final String DISTANCE_DRIVEN = "distanceDriven";
@@ -55,11 +55,11 @@ public class DoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get(DROPOFF_DATE), start, end);
+                return cb.between(root.get(DROP_OFF_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get(DROPOFF_DATE), start);
+                return cb.greaterThanOrEqualTo(root.get(DROP_OFF_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get(DROPOFF_DATE), end);
+                return cb.lessThanOrEqualTo(root.get(DROP_OFF_DATE), end);
             }
         };
     }

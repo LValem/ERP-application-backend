@@ -62,7 +62,7 @@ public class EmployeeSpecifications {
             Root<CertificationEntity> certificationRoot = subquery.from(CertificationEntity.class);
 
             Expression<String> concatenatedCertifications = cb.function(
-                    "STRING_AGG", String.class, // Use STRING_AGG for PostgreSQL
+                    "STRING_AGG", String.class,
                     certificationRoot.join("certificationType").get("certificationName"),
                     cb.literal(", ")
             );
