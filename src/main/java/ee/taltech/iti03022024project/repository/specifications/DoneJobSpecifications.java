@@ -6,6 +6,11 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class DoneJobSpecifications {
+    private static final String PICKUP_DATE = "pickupDate";
+    private static final String DROPOFF_DATE = "dropOffDate";
+    private static final String FUEL_CONSUMPTION = "fuelConsumption";
+    private static final String FUEL_USED = "fuelUsed";
+    private static final String DISTANCE_DRIVEN = "distanceDriven";
 
     public static Specification<JobEntity> jobId(Integer jobId) {
         return (root, query, cb) -> jobId == null ? null : cb.equal(root.get("jobId"), jobId);
@@ -37,11 +42,11 @@ public class DoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("pickupDate"), start, end);
+                return cb.between(root.get(PICKUP_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("pickupDate"), start);
+                return cb.greaterThanOrEqualTo(root.get(PICKUP_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("pickupDate"), end);
+                return cb.lessThanOrEqualTo(root.get(PICKUP_DATE), end);
             }
         };
     }
@@ -50,11 +55,11 @@ public class DoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("dropOffDate"), start, end);
+                return cb.between(root.get(DROPOFF_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("dropOffDate"), start);
+                return cb.greaterThanOrEqualTo(root.get(DROPOFF_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("dropOffDate"), end);
+                return cb.lessThanOrEqualTo(root.get(DROPOFF_DATE), end);
             }
         };
     }
@@ -63,11 +68,11 @@ public class DoneJobSpecifications {
         return (root, query, cb) -> {
             if (minFuelUsed == null && maxFuelUsed == null) return null;
             if (minFuelUsed != null && maxFuelUsed != null) {
-                return cb.between(root.join("fuelConsumption").get("fuelUsed"), minFuelUsed, maxFuelUsed);
+                return cb.between(root.join(FUEL_CONSUMPTION).get(FUEL_USED), minFuelUsed, maxFuelUsed);
             } else if (minFuelUsed != null) {
-                return cb.greaterThanOrEqualTo(root.join("fuelConsumption").get("fuelUsed"), minFuelUsed);
+                return cb.greaterThanOrEqualTo(root.join(FUEL_CONSUMPTION).get(FUEL_USED), minFuelUsed);
             } else {
-                return cb.lessThanOrEqualTo(root.join("fuelConsumption").get("fuelUsed"), maxFuelUsed);
+                return cb.lessThanOrEqualTo(root.join(FUEL_CONSUMPTION).get(FUEL_USED), maxFuelUsed);
             }
         };
     }
@@ -76,11 +81,11 @@ public class DoneJobSpecifications {
         return (root, query, cb) -> {
             if (minDistanceDriven == null && maxDistanceDriven == null) return null;
             if (minDistanceDriven != null && maxDistanceDriven != null) {
-                return cb.between(root.join("fuelConsumption").get("distanceDriven"), minDistanceDriven, maxDistanceDriven);
+                return cb.between(root.join(FUEL_CONSUMPTION).get(DISTANCE_DRIVEN), minDistanceDriven, maxDistanceDriven);
             } else if (minDistanceDriven != null) {
-                return cb.greaterThanOrEqualTo(root.join("fuelConsumption").get("distanceDriven"), minDistanceDriven);
+                return cb.greaterThanOrEqualTo(root.join(FUEL_CONSUMPTION).get(DISTANCE_DRIVEN), minDistanceDriven);
             } else {
-                return cb.lessThanOrEqualTo(root.join("fuelConsumption").get("distanceDriven"), maxDistanceDriven);
+                return cb.lessThanOrEqualTo(root.join(FUEL_CONSUMPTION).get(DISTANCE_DRIVEN), maxDistanceDriven);
             }
         };
     }

@@ -28,15 +28,16 @@ public class CertificationService {
     private final CertificationMapping certificationMapping;
 
     private static final Logger log = LoggerFactory.getLogger(CertificationService.class);
+    private static final String DOES_NOT_EXIST = " does not exist.";
 
     public CertificationDto createCertification(CertificationDto certificationDto) {
         log.info("Creating certification for employee with ID: {}", certificationDto.getEmployeeId());
 
         CertificationTypeEntity certificationType = certificationTypeRepository.findById(certificationDto.getCertificationTypeId())
-                .orElseThrow(() -> new NotFoundException("Certification type with ID " + certificationDto.getCertificationTypeId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Certification type with ID " + certificationDto.getCertificationTypeId() + DOES_NOT_EXIST));
 
         EmployeeEntity employee = employeeRepository.findById(certificationDto.getEmployeeId())
-                .orElseThrow(() -> new NotFoundException("Employee with ID " + certificationDto.getEmployeeId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Employee with ID " + certificationDto.getEmployeeId() + DOES_NOT_EXIST));
 
         if (certificationRepository.existsByEmployeeAndCertificationType(employee, certificationType)) {
             throw new AlreadyExistsException("Certification for this employee with the same type already exists.");
@@ -62,7 +63,7 @@ public class CertificationService {
         log.info("Fetching certification with ID: {}", id);
 
         CertificationEntity certificationEntity = certificationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Certification with ID " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Certification with ID " + id + DOES_NOT_EXIST));
 
         log.info("Fetched certification with ID: {}", id);
         return Optional.of(certificationMapping.certificationToDto(certificationEntity));
@@ -72,11 +73,11 @@ public class CertificationService {
         log.info("Updating certification with ID: {}", certificationDto.getCertificationId());
 
         CertificationEntity certificationEntity = certificationRepository.findById(certificationDto.getCertificationId())
-                .orElseThrow(() -> new NotFoundException("Certification with ID " + certificationDto.getCertificationId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Certification with ID " + certificationDto.getCertificationId() + DOES_NOT_EXIST));
 
         if (certificationDto.getCertificationTypeId() != null) {
             CertificationTypeEntity certificationType = certificationTypeRepository.findById(certificationDto.getCertificationTypeId())
-                    .orElseThrow(() -> new NotFoundException("Certification type with ID " + certificationDto.getCertificationTypeId() + " does not exist."));
+                    .orElseThrow(() -> new NotFoundException("Certification type with ID " + certificationDto.getCertificationTypeId() + DOES_NOT_EXIST));
             certificationEntity.setCertificationType(certificationType);
         }
 

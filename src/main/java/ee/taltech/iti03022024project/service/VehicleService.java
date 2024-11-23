@@ -1,6 +1,5 @@
 package ee.taltech.iti03022024project.service;
 
-import ee.taltech.iti03022024project.dto.UpdateVehicleRequestDto;
 import ee.taltech.iti03022024project.dto.VehicleDto;
 import ee.taltech.iti03022024project.entity.VehicleEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;
@@ -51,10 +50,13 @@ public class VehicleService {
     }
 
     public Optional<VehicleDto> getVehicleById(Integer id) {
+        log.info("Fetching vehicle with id {}", id);
         Optional<VehicleEntity> vehicleEntity = vehicleRepository.findById(id);
-        vehicleEntity.orElseThrow(() -> new NotFoundException("Vehicle with this ID does not exist"));
+        if (vehicleEntity.isEmpty()) {
+            throw new NotFoundException("There is no vehicle with id " + id);
+        }
 
-        log.info("Fetched vehicle with ID: {}", id);
+        log.info("Successfully fetched vehicle with ID: {}", id);
 
         return vehicleEntity.map(vehicleMapping::vehicleToDto);
     }
@@ -85,7 +87,8 @@ public class VehicleService {
             vehicleEntity.setCurrentFuel(currentFuel);
         }
 
-        if (registrationPlate != null && !registrationPlate.equals(getVehicleById(id).get().getRegistrationPlate())) {
+        Optional<VehicleDto> vehicleOpt = getVehicleById(id);
+        if (registrationPlate != null && vehicleOpt.isPresent() && !registrationPlate.equals(vehicleOpt.get().getRegistrationPlate())) {
             if (!vehicleRepository.existsByRegistrationPlate(registrationPlate)) {
                 if (registrationPlate.length() == 6) {
                     vehicleEntity.setRegistrationPlate(registrationPlate);

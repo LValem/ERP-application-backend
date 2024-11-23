@@ -1,7 +1,5 @@
 package ee.taltech.iti03022024project.dto.searchcriteria;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 

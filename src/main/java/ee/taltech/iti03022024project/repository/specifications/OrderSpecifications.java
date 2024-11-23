@@ -6,6 +6,11 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class OrderSpecifications {
+    private static final String WEIGHT = "weight";
+    private static final String LENGTH = "length";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+    private static final String DROPOFFDATE = "dropoffdate";
 
     public static Specification<OrderEntity> orderId(Integer orderId) {
         return (root, query, cb) -> orderId == null ? null : cb.equal(root.get("orderId"), orderId);
@@ -29,11 +34,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("dropOffDate"), start, end);
+                return cb.between(root.get(DROPOFFDATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("dropOffDate"), start);
+                return cb.greaterThanOrEqualTo(root.get(DROPOFFDATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("dropOffDate"), end);
+                return cb.lessThanOrEqualTo(root.get(DROPOFFDATE), end);
             }
         };
     }
@@ -42,11 +47,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (minWeight == null && maxWeight == null) return null;
             if (minWeight != null && maxWeight != null) {
-                return cb.between(root.get("weight"), minWeight, maxWeight);
+                return cb.between(root.get(WEIGHT), minWeight, maxWeight);
             } else if (minWeight != null) {
-                return cb.greaterThanOrEqualTo(root.get("weight"), minWeight);
+                return cb.greaterThanOrEqualTo(root.get(WEIGHT), minWeight);
             } else {
-                return cb.lessThanOrEqualTo(root.get("weight"), maxWeight);
+                return cb.lessThanOrEqualTo(root.get(WEIGHT), maxWeight);
             }
         };
     }
@@ -55,11 +60,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (minLength == null && maxLength == null) return null;
             if (minLength != null && maxLength != null) {
-                return cb.between(root.get("length"), minLength, maxLength);
+                return cb.between(root.get(LENGTH), minLength, maxLength);
             } else if (minLength != null) {
-                return cb.greaterThanOrEqualTo(root.get("length"), minLength);
+                return cb.greaterThanOrEqualTo(root.get(LENGTH), minLength);
             } else {
-                return cb.lessThanOrEqualTo(root.get("length"), maxLength);
+                return cb.lessThanOrEqualTo(root.get(LENGTH), maxLength);
             }
         };
     }
@@ -68,11 +73,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (minWidth == null && maxWidth == null) return null;
             if (minWidth != null && maxWidth != null) {
-                return cb.between(root.get("width"), minWidth, maxWidth);
+                return cb.between(root.get(WIDTH), minWidth, maxWidth);
             } else if (minWidth != null) {
-                return cb.greaterThanOrEqualTo(root.get("width"), minWidth);
+                return cb.greaterThanOrEqualTo(root.get(WIDTH), minWidth);
             } else {
-                return cb.lessThanOrEqualTo(root.get("width"), maxWidth);
+                return cb.lessThanOrEqualTo(root.get(WIDTH), maxWidth);
             }
         };
     }
@@ -81,11 +86,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (minHeight == null && maxHeight == null) return null;
             if (minHeight != null && maxHeight != null) {
-                return cb.between(root.get("height"), minHeight, maxHeight);
+                return cb.between(root.get(HEIGHT), minHeight, maxHeight);
             } else if (minHeight != null) {
-                return cb.greaterThanOrEqualTo(root.get("height"), minHeight);
+                return cb.greaterThanOrEqualTo(root.get(HEIGHT), minHeight);
             } else {
-                return cb.lessThanOrEqualTo(root.get("height"), maxHeight);
+                return cb.lessThanOrEqualTo(root.get(HEIGHT), maxHeight);
             }
         };
     }

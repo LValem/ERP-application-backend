@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 public class NotDoneJobSpecifications {
 
+    private static final String DROP_OFF_DATE = "dropOffDate";
+
     public static Specification<JobEntity> jobId(Integer jobId) {
         return (root, query, cb) -> jobId == null ? null : cb.equal(root.get("jobId"), jobId);
     }
@@ -44,11 +46,11 @@ public class NotDoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("dropOffDate"), start, end);
+                return cb.between(root.get(DROP_OFF_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("dropOffDate"), start);
+                return cb.greaterThanOrEqualTo(root.get(DROP_OFF_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("dropOffDate"), end);
+                return cb.lessThanOrEqualTo(root.get(DROP_OFF_DATE), end);
             }
         };
     }
