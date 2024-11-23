@@ -10,7 +10,7 @@ public class OrderSpecifications {
     private static final String LENGTH = "length";
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
-    private static final String DROPOFFDATE = "dropoffdate";
+    private static final String DROP_OFF_DATE = "dropOffDate";
 
     public static Specification<OrderEntity> orderId(Integer orderId) {
         return (root, query, cb) -> orderId == null ? null : cb.equal(root.get("orderId"), orderId);
@@ -34,11 +34,11 @@ public class OrderSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get(DROPOFFDATE), start, end);
+                return cb.between(root.get(DROP_OFF_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get(DROPOFFDATE), start);
+                return cb.greaterThanOrEqualTo(root.get(DROP_OFF_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get(DROPOFFDATE), end);
+                return cb.lessThanOrEqualTo(root.get(DROP_OFF_DATE), end);
             }
         };
     }

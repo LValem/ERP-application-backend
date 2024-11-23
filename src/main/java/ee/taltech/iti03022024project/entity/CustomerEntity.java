@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Data
 @AllArgsConstructor
@@ -35,4 +37,7 @@ public class CustomerEntity {
 
     @Column(name = "vat_no", length = 64)
     private String vatNo;
+
+    @OneToMany(mappedBy = "customer")
+    private List<OrderEntity> orders;
 }

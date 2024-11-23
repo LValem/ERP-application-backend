@@ -123,75 +123,78 @@ public class JobService {
     }
 
     public PageResponse<DoneJobTableInfoDto> searchDoneJobsTable(DoneJobSearchCriteria criteria) {
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 20;
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "jobId";
         switch (sortBy) {
             case "vehicleId": sortBy = "vehicle.vehicleId"; break;
             case "registrationPlate": sortBy = "vehicle.registrationPlate"; break;
-            case "fuelUsed": sortBy = "fc.fuelUsed"; break;
-            case "distanceDriven": sortBy = "fc.distanceDriven"; break;
+            case "fuelUsed": sortBy = "fuelConsumption.fuelUsed"; break;
+            case "distanceDriven": sortBy = "fuelConsumption.distanceDriven"; break;
             case "orderId": sortBy = "order.orderId"; break;
             case "customerName": sortBy = "order.customer.name"; break;
             default: break;
         }
 
-        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
-        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
-        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
 
-        // Create Sort and Pageable
-        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        // Build the specification
-        Specification<JobEntity> spec = Specification
-                .where(DoneJobSpecifications.jobId(criteria.getJobId()))
-                .and(DoneJobSpecifications.vehicleId(criteria.getVehicleId()))
-                .and(DoneJobSpecifications.registrationPlateLike(criteria.getRegistrationPlate()))
-                .and(DoneJobSpecifications.orderId(criteria.getOrderId()))
-                .and(DoneJobSpecifications.customerNameLike(criteria.getCustomerName()))
-                .and(DoneJobSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
-                .and(DoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
-                .and(DoneJobSpecifications.fuelUsedBetween(criteria.getMinFuelUsed(), criteria.getMaxFuelUsed()))
-                .and((root, query, builder) -> builder.isTrue(root.get("isComplete")));
+        Specification<JobEntity> spec = Specification.where(
+                DoneJobSpecifications.isComplete()
+                        .and(DoneJobSpecifications.jobId(criteria.getJobId()))
+                        .and(DoneJobSpecifications.vehicleId(criteria.getVehicleId()))
+                        .and(DoneJobSpecifications.registrationPlateLike(criteria.getRegistrationPlate()))
+                        .and(DoneJobSpecifications.fuelUsedBetween(criteria.getMinFuelUsed(), criteria.getMaxFuelUsed()))
+                        .and(DoneJobSpecifications.distanceDrivenBetween(criteria.getMinDistanceDriven(), criteria.getMaxDistanceDriven()))
+                        .and(DoneJobSpecifications.orderId(criteria.getOrderId()))
+                        .and(DoneJobSpecifications.customerNameLike(criteria.getCustomerName()))
+                        .and(DoneJobSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
+                        .and(DoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
+        );
 
-        // Execute query with pagination
-        Page<DoneJobTableInfoDto> dtoPage = jobRepository.findAllDoneJobTableInfo(spec, pageable);
-        log.info("Fetched {} done jobs based on search criteria.", dtoPage.getTotalElements());
-        return new PageResponse<>(dtoPage);
+        Page<JobEntity> jobEntities = jobRepository.findAll(spec, pageable);
+        Page<DoneJobTableInfoDto> doneJobDtos = jobMapping.jobPageToDoneJobDtoPage(jobEntities, pageable);
+        log.info("Fetched {} not done jobs based on search criteria.", doneJobDtos.getTotalElements());
+        return new PageResponse<>(doneJobDtos);
     }
 
     public PageResponse<NotDoneJobTableInfoDto> searchNotDoneJobsTable(NotDoneJobSearchCriteria criteria) {
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 20;
         String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "jobId";
         switch (sortBy) {
             case "vehicleId": sortBy = "vehicle.vehicleId"; break;
             case "registrationPlate": sortBy = "vehicle.registrationPlate"; break;
             case "orderId": sortBy = "order.orderId"; break;
             case "customerName": sortBy = "order.customer.name"; break;
+            case "pickupDate": sortBy = "order.pickupDate"; break;
+            case "dropOffDate": sortBy = "order.dropOffDate"; break;
             default: break;
         }
 
-        String direction = criteria.getSortDirection() != null ? criteria.getSortDirection().toUpperCase() : "DESC";
-        int pageNumber = criteria.getPage() != null ? criteria.getPage() : 0;
-        int pageSize = criteria.getSize() != null ? criteria.getSize() : 20;
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
 
-        // Create Sort and Pageable
-        Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        // Build the specification
-        Specification<JobEntity> spec = Specification
-                .where(NotDoneJobSpecifications.jobId(criteria.getJobId()))
+        Specification<JobEntity> spec = Specification.where(
+                NotDoneJobSpecifications.isComplete()
+                .and(NotDoneJobSpecifications.jobId(criteria.getJobId()))
                 .and(NotDoneJobSpecifications.vehicleId(criteria.getVehicleId()))
                 .and(NotDoneJobSpecifications.registrationPlateLike(criteria.getRegistrationPlate()))
                 .and(NotDoneJobSpecifications.orderId(criteria.getOrderId()))
                 .and(NotDoneJobSpecifications.customerNameLike(criteria.getCustomerName()))
                 .and(NotDoneJobSpecifications.pickupDateBetween(criteria.getPickupStartDate(), criteria.getPickupEndDate()))
                 .and(NotDoneJobSpecifications.dropOffDateBetween(criteria.getDropOffStartDate(), criteria.getDropOffEndDate()))
-                .and((root, query, builder) -> builder.isFalse(root.get("isComplete")));
+        );
 
-        // Execute query with pagination
-        Page<NotDoneJobTableInfoDto> dtoPage = jobRepository.findAllNotDoneJobTableInfo(spec, pageable);
-        log.info("Fetched {} not done jobs based on search criteria.", dtoPage.getTotalElements());
-        return new PageResponse<>(dtoPage);
+        Page<JobEntity> jobEntities = jobRepository.findAll(spec, pageable);
+        Page<NotDoneJobTableInfoDto> notDoneJobDtos = jobMapping.jobPageToNotDoneJobDtoPage(jobEntities, pageable);
+        log.info("Fetched {} not done jobs based on search criteria.", notDoneJobDtos.getTotalElements());
+        return new PageResponse<>(notDoneJobDtos);
     }
 }
