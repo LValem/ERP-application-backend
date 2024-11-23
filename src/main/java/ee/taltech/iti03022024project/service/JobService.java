@@ -42,17 +42,18 @@ public class JobService {
     private final JobMapping jobMapping;
 
     private static final Logger log = LoggerFactory.getLogger(JobService.class);
+    private static final String DOES_NOT_EXIST = " does not exist.";
 
     public JobDto createJob(JobDto jobDto) {
         System.out.println("vehicle id" + jobDto.getVehicleId());
         System.out.println("job id" + jobDto.getEmployeeId());
         System.out.println("order id" + jobDto.getOrderId());
         VehicleEntity vehicle = vehicleRepository.findById(jobDto.getVehicleId())
-                .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + DOES_NOT_EXIST));
         EmployeeEntity employee = employeeRepository.findById(jobDto.getEmployeeId())
-                .orElseThrow(() -> new NotFoundException("Employee with ID " + jobDto.getEmployeeId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Employee with ID " + jobDto.getEmployeeId() + DOES_NOT_EXIST));
         OrderEntity order = orderRepository.findById(jobDto.getOrderId())
-                .orElseThrow(() -> new NotFoundException("Order with ID " + jobDto.getOrderId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Order with ID " + jobDto.getOrderId() + DOES_NOT_EXIST));
 
         JobEntity jobEntity = jobMapping.jobToEntity(jobDto);
         jobEntity.setVehicle(vehicle);
@@ -78,7 +79,7 @@ public class JobService {
 
     public Optional<JobDto> getJobById(Integer id) {
         JobEntity jobEntity = jobRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Job with ID " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Job with ID " + id + DOES_NOT_EXIST));
 
         log.info("Fetched job with ID: {}", id);
 
@@ -87,21 +88,21 @@ public class JobService {
 
     public Optional<JobDto> updateJob(Integer id, JobDto jobDto) {
         JobEntity jobEntity = jobRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Job with ID " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Job with ID " + id + DOES_NOT_EXIST));
 
         if (jobDto.getVehicleId() != null) {
             VehicleEntity vehicle = vehicleRepository.findById(jobDto.getVehicleId())
-                    .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + " does not exist."));
+                    .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + DOES_NOT_EXIST));
             jobEntity.setVehicle(vehicle);
         }
         if (jobDto.getEmployeeId() != null) {
             EmployeeEntity employee = employeeRepository.findById(jobDto.getEmployeeId())
-                    .orElseThrow(() -> new NotFoundException("Employee with ID " + jobDto.getEmployeeId() + " does not exist."));
+                    .orElseThrow(() -> new NotFoundException("Employee with ID " + jobDto.getEmployeeId() + DOES_NOT_EXIST));
             jobEntity.setEmployee(employee);
         }
         if (jobDto.getOrderId() != null) {
             OrderEntity order = orderRepository.findById(jobDto.getOrderId())
-                    .orElseThrow(() -> new NotFoundException("Order with ID " + jobDto.getOrderId() + " does not exist."));
+                    .orElseThrow(() -> new NotFoundException("Order with ID " + jobDto.getOrderId() + DOES_NOT_EXIST));
             jobEntity.setOrder(order);
         }
         if (jobDto.getPickupDate() != null) {

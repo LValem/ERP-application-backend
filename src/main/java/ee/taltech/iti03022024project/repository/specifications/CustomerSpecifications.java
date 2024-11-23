@@ -78,7 +78,6 @@ public class CustomerSpecifications {
 
     public static Specification<CustomerEntity> sortByLastOrderDate(Sort.Direction direction) {
         return (root, query, cb) -> {
-            // Create a subquery for the greatest dropOffDate
             assert query != null;
             Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
             Root<OrderEntity> orderRoot = subquery.from(OrderEntity.class);

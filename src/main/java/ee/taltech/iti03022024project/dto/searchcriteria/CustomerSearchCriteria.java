@@ -23,14 +23,14 @@ public class CustomerSearchCriteria {
     @Size(max = 255)
     private String cityCounty;
 
-    @Pattern(regexp = "^[0-9]{5}$", message = "ZIP code must be a 5-digit number")
+    @Pattern(regexp = "^\\d{5}$", message = "ZIP code must be a 5-digit number")
     private String zip;
 
     @Email
     @Size(max = 100)
     private String email;
 
-    @Pattern(regexp = "^[+]*[0-9]{7,15}$", message = "Phone number must be between 7 and 15 digits and can include a '+' at the beginning")
+    @Pattern(regexp = "^[+]*\\d{7,15}$", message = "Phone number must be between 7 and 15 digits and can include a '+' at the beginning")
     private String phoneNumber;
 
     @Size(max = 64)

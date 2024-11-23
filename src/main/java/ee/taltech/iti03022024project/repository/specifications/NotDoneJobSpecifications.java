@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 public class NotDoneJobSpecifications {
 
+    private static final String DROP_OFF_DATE = "dropOffDate";
+    private static final String PICK_UP_DATE = "pickupDate";
+
     public static Specification<JobEntity> jobId(Integer jobId) {
         return (root, query, cb) -> jobId == null ? null : cb.equal(root.get("jobId"), jobId);
     }
@@ -37,11 +40,11 @@ public class NotDoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("order").get("pickupDate"), start, end);
+                return cb.between(root.get("order").get(PICK_UP_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("order").get("pickupDate"), start);
+                return cb.greaterThanOrEqualTo(root.get("order").get(PICK_UP_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("order").get("pickupDate"), end);
+                return cb.lessThanOrEqualTo(root.get("order").get(PICK_UP_DATE), end);
             }
         };
     }
@@ -50,11 +53,11 @@ public class NotDoneJobSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return null;
             if (start != null && end != null) {
-                return cb.between(root.get("order").get("dropOffDate"), start, end);
+                return cb.between(root.get("order").get(DROP_OFF_DATE), start, end);
             } else if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("order").get("dropOffDate"), start);
+                return cb.greaterThanOrEqualTo(root.get("order").get(DROP_OFF_DATE), start);
             } else {
-                return cb.lessThanOrEqualTo(root.get("order").get("dropOffDate"), end);
+                return cb.lessThanOrEqualTo(root.get("order").get(DROP_OFF_DATE), end);
             }
         };
     }

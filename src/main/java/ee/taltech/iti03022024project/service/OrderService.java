@@ -34,12 +34,13 @@ public class OrderService {
     private final OrderMapping orderMapping;
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+    private static final String DOES_NOT_EXIST = " does not exist.";
 
     public OrderDto createOrder(OrderDto orderDto) {
         log.info("Creating order with details: {}", orderDto);
 
         CustomerEntity customer = customerRepository.findById(orderDto.getCustomerId())
-                .orElseThrow(() -> new NotFoundException("Customer with ID " + orderDto.getCustomerId() + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Customer with ID " + orderDto.getCustomerId() + DOES_NOT_EXIST));
 
         OrderEntity orderEntity = orderMapping.orderToEntity(orderDto);
         orderEntity.setCustomer(customer);
@@ -58,7 +59,7 @@ public class OrderService {
     public Optional<OrderDto> getOrderById(Integer id) {
         log.info("Fetching order with ID: {}", id);
         OrderEntity orderEntity = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Order with ID " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Order with ID " + id + DOES_NOT_EXIST));
         return Optional.of(orderMapping.orderToDto(orderEntity));
     }
 
@@ -66,11 +67,11 @@ public class OrderService {
         log.info("Updating order with ID: {}", id);
 
         OrderEntity orderEntity = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Order with ID " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Order with ID " + id + DOES_NOT_EXIST));
 
         if (orderDto.getCustomerId() != null) {
             CustomerEntity customer = customerRepository.findById(orderDto.getCustomerId())
-                    .orElseThrow(() -> new NotFoundException("Customer with ID " + orderDto.getCustomerId() + " does not exist."));
+                    .orElseThrow(() -> new NotFoundException("Customer with ID " + orderDto.getCustomerId() + DOES_NOT_EXIST));
             orderEntity.setCustomer(customer);
         }
         if (orderDto.getPickupDate() != null) orderEntity.setPickupDate(orderDto.getPickupDate());

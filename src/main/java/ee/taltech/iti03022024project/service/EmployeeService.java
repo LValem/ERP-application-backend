@@ -81,7 +81,10 @@ public class EmployeeService {
         log.info("Fetching employee with ID: {}", id);
 
         Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
-        employeeEntity.orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
+        // Throw exception if not found
+        if (employeeEntity.isEmpty()) {
+            throw new NotFoundException("Employee with ID: " + id + " does not exist");
+        }
 
         log.info("Successfully fetched employee with ID: {}", id);
         return employeeEntity.map(employeeMapping::employeeToDto);
@@ -101,13 +104,13 @@ public class EmployeeService {
                 .orElseThrow(() -> new NotFoundException("Employee with this ID does not exist"));
 
         // Update fields if the new values are provided (not null)
-        if (name != null) {
-            if (!Objects.equals(getEmployeeById(id).get().getName(), name)) {
-                if (!name.isEmpty() && !employeeRepository.existsByNameIgnoreCase(name)) {
-                    employeeEntity.setName(name);
-                } else {
-                    throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
-                }
+        Optional<EmployeeDto> employeeOpt = getEmployeeById(id);
+
+        if (name != null && !name.isEmpty() && employeeOpt.isPresent() && !Objects.equals(employeeOpt.get().getName(), name)) {
+            if (!employeeRepository.existsByNameIgnoreCase(name)) {
+                employeeEntity.setName(name);
+            } else {
+                throw new AlreadyExistsException("Cannot change name to " + name + " ,because " + name + " already exists!");
             }
         }
 
