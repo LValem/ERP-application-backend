@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class EmployeeSpecifications {
+    private static final String DROPOFF_DATE = "dropOffDate";
 
     public static Specification<EmployeeEntity> employeeId(Integer employeeId) {
         return (root, query, cb) -> employeeId == null ? null : cb.equal(root.get("employeeId"), employeeId);
@@ -37,11 +38,11 @@ public class EmployeeSpecifications {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return null;
             if (startDate != null && endDate != null) {
-                return cb.between(root.join("jobs").get("dropOffDate"), startDate, endDate);
+                return cb.between(root.join("jobs").get(DROPOFF_DATE), startDate, endDate);
             } else if (startDate != null) {
-                return cb.greaterThanOrEqualTo(root.join("jobs").get("dropOffDate"), startDate);
+                return cb.greaterThanOrEqualTo(root.join("jobs").get(DROPOFF_DATE), startDate);
             } else {
-                return cb.lessThanOrEqualTo(root.join("jobs").get("dropOffDate"), endDate);
+                return cb.lessThanOrEqualTo(root.join("jobs").get(DROPOFF_DATE), endDate);
             }
         };
     }
