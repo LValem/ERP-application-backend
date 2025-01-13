@@ -90,8 +90,8 @@ public class EmployeeController {
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @ApiResponse(responseCode = "404", description = "There are no employees")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping("api/employees/table")
-    public ResponseEntity<PageResponse<EmployeeTableInfoDto>> searchEmployees(@RequestBody(required = false) EmployeeSearchCriteria criteria) {
+    @GetMapping("api/employees/table")
+    public ResponseEntity<PageResponse<EmployeeTableInfoDto>> searchEmployees(EmployeeSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new EmployeeSearchCriteria();
         }

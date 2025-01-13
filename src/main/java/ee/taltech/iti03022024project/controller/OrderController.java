@@ -91,9 +91,9 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no orders")
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
-    @PostMapping("/table")
+    @GetMapping("/table")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@Valid @RequestBody(required = false) OrderSearchCriteria criteria) {
+    public ResponseEntity<PageResponse<OrdersTableInfoDto>> searchOrdersTable(@Valid OrderSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new OrderSearchCriteria();
         }

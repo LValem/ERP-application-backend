@@ -88,8 +88,8 @@ public class CertificationTypeController {
     @ApiResponse(responseCode = "200", description = "Certification types retrieved successfully")
     @ApiResponse(responseCode = "404", description = "There are no certification types")
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
-    @PostMapping("/table")
-    public ResponseEntity<PageResponse<CertificationTypeDto>> searchCertificationTypes(@Valid @RequestBody(required = false) CertificationTypeSearchCriteria criteria) {
+    @GetMapping("/table")
+    public ResponseEntity<PageResponse<CertificationTypeDto>> searchCertificationTypes(@Valid CertificationTypeSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new CertificationTypeSearchCriteria();
         }

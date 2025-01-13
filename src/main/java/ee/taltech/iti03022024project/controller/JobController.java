@@ -90,8 +90,8 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Done jobs retrieved successfully")
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
-    @PostMapping("/done-table")
-    public ResponseEntity<PageResponse<DoneJobTableInfoDto>> searchDoneJobs(@Valid @RequestBody(required = false) DoneJobSearchCriteria criteria) {
+    @GetMapping("/done-table")
+    public ResponseEntity<PageResponse<DoneJobTableInfoDto>> searchDoneJobs(@Valid DoneJobSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new DoneJobSearchCriteria();
         }
@@ -105,8 +105,8 @@ public class JobController {
     )
     @ApiResponse(responseCode = "200", description = "Not done jobs retrieved successfully")
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
-    @PostMapping("/not-done-table")
-    public ResponseEntity<PageResponse<NotDoneJobTableInfoDto>> searchNotDoneJobs(@Valid @RequestBody(required = false) NotDoneJobSearchCriteria criteria) {
+    @GetMapping("/not-done-table")
+    public ResponseEntity<PageResponse<NotDoneJobTableInfoDto>> searchNotDoneJobs(@Valid NotDoneJobSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new NotDoneJobSearchCriteria();
         }

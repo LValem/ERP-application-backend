@@ -72,7 +72,7 @@ public class VehicleController {
     @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
     @ApiResponse(responseCode = "409", description = "Invalid input")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<VehicleDto> updateVehicle(
             @PathVariable Integer id,
             @RequestBody UpdateVehicleRequestDto updateVehicleRequestDto

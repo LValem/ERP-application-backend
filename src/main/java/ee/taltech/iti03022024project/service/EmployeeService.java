@@ -91,9 +91,6 @@ public class EmployeeService {
     }
 
     public Optional<EmployeeDto> updateEmployee(Integer id, String name, Integer permissionId, String password) {
-        System.out.println(name);
-        System.out.println(permissionId);
-        System.out.println(password);
         log.info("Attempting to update employee with ID: {}", id);
 
         // Find the employee by ID

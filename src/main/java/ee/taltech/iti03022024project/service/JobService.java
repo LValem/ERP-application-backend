@@ -45,9 +45,6 @@ public class JobService {
     private static final String DOES_NOT_EXIST = " does not exist.";
 
     public JobDto createJob(JobDto jobDto) {
-        System.out.println("vehicle id" + jobDto.getVehicleId());
-        System.out.println("job id" + jobDto.getEmployeeId());
-        System.out.println("order id" + jobDto.getOrderId());
         VehicleEntity vehicle = vehicleRepository.findById(jobDto.getVehicleId())
                 .orElseThrow(() -> new NotFoundException("Vehicle with ID " + jobDto.getVehicleId() + DOES_NOT_EXIST));
         EmployeeEntity employee = employeeRepository.findById(jobDto.getEmployeeId())

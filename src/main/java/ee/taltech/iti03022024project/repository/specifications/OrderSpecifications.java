@@ -12,6 +12,8 @@ public class OrderSpecifications {
     private static final String HEIGHT = "height";
     private static final String DROP_OFF_DATE = "dropOffDate";
 
+    private OrderSpecifications() {}
+
     public static Specification<OrderEntity> orderId(Integer orderId) {
         return (root, query, cb) -> orderId == null ? null : cb.equal(root.get("orderId"), orderId);
     }
