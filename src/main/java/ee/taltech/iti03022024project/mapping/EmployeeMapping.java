@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -44,7 +45,7 @@ public interface EmployeeMapping {
         LocalDateTime lastJobDate = employeeEntity.getJobs() != null
                 ? employeeEntity.getJobs().stream()
                 .map(JobEntity::getDropOffDate)
-                .filter(date -> date != null)
+                .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .orElse(null)
                 : null;
@@ -62,7 +63,7 @@ public interface EmployeeMapping {
         return employeeEntities != null
                 ? employeeEntities.stream()
                 .map(this::employeeToTableInfoDto)
-                .collect(Collectors.toList())
+                .toList()
                 : List.of();
     }
 
@@ -70,7 +71,7 @@ public interface EmployeeMapping {
         List<EmployeeTableInfoDto> dtoList = employeePage != null
                 ? employeePage.stream()
                 .map(this::employeeToTableInfoDto)
-                .collect(Collectors.toList())
+                .toList()
                 : List.of();
         return new PageImpl<>(dtoList, pageable, employeePage != null ? employeePage.getTotalElements() : 0);
     }

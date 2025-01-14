@@ -11,8 +11,12 @@ import java.time.LocalDateTime;
 
 public class CustomerSpecifications {
 
+    private CustomerSpecifications() {}
+
+    private static final String CUSTOMER_ID = "customerId";
+
     public static Specification<CustomerEntity> customerId(Integer customerId) {
-        return (root, query, cb) -> customerId == null ? null : cb.equal(root.get("customerId"), customerId);
+        return (root, query, cb) -> customerId == null ? null : cb.equal(root.get(CUSTOMER_ID), customerId);
     }
 
     public static Specification<CustomerEntity> customerNameLike(String customerName) {
@@ -62,7 +66,7 @@ public class CustomerSpecifications {
             Root<OrderEntity> orderRoot = subquery.from(OrderEntity.class);
 
             subquery.select(cb.greatest(orderRoot.<LocalDateTime>get("dropOffDate")))
-                    .where(cb.equal(orderRoot.get("customer").get("customerId"), root.get("customerId")));
+                    .where(cb.equal(orderRoot.get("customer").get(CUSTOMER_ID), root.get(CUSTOMER_ID)));
 
             if (start != null && end != null) {
                 return cb.between(subquery, start, end);
@@ -83,7 +87,7 @@ public class CustomerSpecifications {
             Root<OrderEntity> orderRoot = subquery.from(OrderEntity.class);
 
             subquery.select(cb.greatest(orderRoot.<LocalDateTime>get("dropOffDate")))
-                    .where(cb.equal(orderRoot.get("customer").get("customerId"), root.get("customerId")));
+                    .where(cb.equal(orderRoot.get("customer").get(CUSTOMER_ID), root.get(CUSTOMER_ID)));
 
             if (direction == Sort.Direction.DESC) {
                 query.orderBy(cb.desc(subquery));

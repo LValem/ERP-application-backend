@@ -85,8 +85,8 @@ public class CustomerController {
     )
     @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
     @ApiResponse(responseCode = "404", description = "No customers found")
-    @PostMapping("/table")
-    public ResponseEntity<PageResponse<CustomerTableInfoDto>> searchCustomerTable(@Valid @RequestBody(required = false) CustomerSearchCriteria criteria) {
+    @GetMapping("/table")
+    public ResponseEntity<PageResponse<CustomerTableInfoDto>> searchCustomerTable(@Valid CustomerSearchCriteria criteria) {
         if (criteria == null) {
             criteria = new CustomerSearchCriteria();
         }

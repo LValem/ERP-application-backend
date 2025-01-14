@@ -12,6 +12,8 @@ public class DoneJobSpecifications {
     private static final String FUEL_USED = "fuelUsed";
     private static final String DISTANCE_DRIVEN = "distanceDriven";
 
+    private DoneJobSpecifications() {}
+
     public static Specification<JobEntity> jobId(Integer jobId) {
         return (root, query, cb) -> jobId == null ? null : cb.equal(root.get("jobId"), jobId);
     }

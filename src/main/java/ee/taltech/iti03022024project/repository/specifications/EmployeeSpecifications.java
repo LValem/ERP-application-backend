@@ -12,6 +12,11 @@ import java.time.LocalDateTime;
 
 public class EmployeeSpecifications {
 
+    private static final String DESCRIPTION = "description";
+    private static final String EMPLOYEE = "employee";
+
+    private EmployeeSpecifications() {}
+
     public static Specification<EmployeeEntity> employeeId(Integer employeeId) {
         return (root, query, cb) -> employeeId == null ? null : cb.equal(root.get("employeeId"), employeeId);
     }
@@ -26,7 +31,7 @@ public class EmployeeSpecifications {
     public static Specification<EmployeeEntity> permissionDescription(String permissionDescription) {
         return (root, query, cb) -> {
             if (permissionDescription == null || permissionDescription.isEmpty()) return null;
-            return cb.like(cb.lower(root.join("permission").get("description")), "%" + permissionDescription.toLowerCase() + "%");
+            return cb.like(cb.lower(root.join("permission").get(DESCRIPTION)), "%" + permissionDescription.toLowerCase() + "%");
         };
     }
 
@@ -36,9 +41,9 @@ public class EmployeeSpecifications {
 
             assert query != null;
             if (direction == Sort.Direction.DESC) {
-                query.orderBy(cb.desc(permissionJoin.get("description")));
+                query.orderBy(cb.desc(permissionJoin.get(DESCRIPTION)));
             } else {
-                query.orderBy(cb.asc(permissionJoin.get("description")));
+                query.orderBy(cb.asc(permissionJoin.get(DESCRIPTION)));
             }
             return null;
         };
@@ -68,7 +73,7 @@ public class EmployeeSpecifications {
             );
 
             subquery.select(concatenatedCertifications)
-                    .where(cb.equal(certificationRoot.get("employee"), root));
+                    .where(cb.equal(certificationRoot.get(EMPLOYEE), root));
 
             if (direction == Sort.Direction.DESC) {
                 query.orderBy(cb.desc(subquery));
@@ -86,7 +91,7 @@ public class EmployeeSpecifications {
             Root<JobEntity> jobRoot = subquery.from(JobEntity.class);
 
             subquery.select(cb.greatest(jobRoot.<LocalDateTime>get("dropOffDate")))
-                    .where(cb.equal(jobRoot.get("employee"), root));
+                    .where(cb.equal(jobRoot.get(EMPLOYEE), root));
 
             if (startDate != null && endDate != null) {
                 return cb.between(subquery, startDate, endDate);
@@ -107,7 +112,7 @@ public class EmployeeSpecifications {
             Root<JobEntity> jobRoot = subquery.from(JobEntity.class);
 
             subquery.select(cb.greatest(jobRoot.<LocalDateTime>get("dropOffDate")))
-                    .where(cb.equal(jobRoot.get("employee"), root));
+                    .where(cb.equal(jobRoot.get(EMPLOYEE), root));
 
             if (direction == Sort.Direction.DESC) {
                 query.orderBy(cb.desc(subquery));

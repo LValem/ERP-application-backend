@@ -5,6 +5,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class CertificationTypeSpecifications {
 
+    private CertificationTypeSpecifications() {}
+
     public static Specification<CertificationTypeEntity> certificationTypeId(Integer certificationTypeId) {
         return (root, query, cb) -> certificationTypeId == null ? null : cb.equal(root.get("certificationTypeId"), certificationTypeId);
     }
