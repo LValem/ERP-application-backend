@@ -1,16 +1,25 @@
 package ee.taltech.iti03022024project.service;
 
+import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.VehicleDto;
+import ee.taltech.iti03022024project.dto.query.VehicleTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.VehicleSearchCriteria;
 import ee.taltech.iti03022024project.entity.VehicleEntity;
 import ee.taltech.iti03022024project.exception.AlreadyExistsException;
 import ee.taltech.iti03022024project.exception.NotFoundException;
 import ee.taltech.iti03022024project.exception.WrongValueException;
 import ee.taltech.iti03022024project.mapping.VehicleMapping;
 import ee.taltech.iti03022024project.repository.VehicleRepository;
+import ee.taltech.iti03022024project.repository.specifications.VehicleSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -108,4 +117,38 @@ public class VehicleService {
         // Convert the entity to a DTO and return it
         return Optional.of(vehicleMapping.vehicleToDto(updatedVehicle));
     }
+
+    public PageResponse<VehicleTableInfoDto> searchVehicleTable(VehicleSearchCriteria criteria) {
+        log.info("Searching vehicles with criteria: {}", criteria);
+
+        int page = criteria.getPage() != null ? criteria.getPage() : 0;
+        int size = criteria.getSize() != null ? criteria.getSize() : 20;
+        String sortBy = criteria.getSortBy() != null ? criteria.getSortBy() : "vehicleId";
+        Sort.Direction direction = (criteria.getSortDirection() == null || "desc".equalsIgnoreCase(criteria.getSortDirection()))
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Specification<VehicleEntity> spec = Specification.where(
+                VehicleSpecifications.vehicleId(criteria.getVehicleId())
+                        .and(VehicleSpecifications.vehicleType(criteria.getVehicleType()))
+                        .and(VehicleSpecifications.isInUse(criteria.getIsInUse()))
+                        .and(VehicleSpecifications.maxLoad(criteria.getMaxLoad()))
+                        .and(VehicleSpecifications.currentFuel(criteria.getCurrentFuel()))
+                        .and(VehicleSpecifications.registrationPlateLike(criteria.getRegistrationPlate()))
+        );
+
+        Pageable pageable;
+//        if (sortBy.equals("registrationPlate")) {
+//            spec = spec.and(VehicleSpecifications.sortByRegistrationPlate(direction));
+//            pageable = PageRequest.of(page, size);
+//        } else {
+//            pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+//        }
+
+        Page<VehicleEntity> vehicleEntities = vehicleRepository.findAll(spec, pageable);
+        Page<VehicleTableInfoDto> vehicleDtos = vehicleMapping.vehiclePageToTableInfoDtoPage(vehicleEntities, pageable);
+        log.info("Fetched {} vehicles based on search criteria.", vehicleDtos.getTotalElements());
+        return new PageResponse<>(vehicleDtos);
+    }
+
 }
