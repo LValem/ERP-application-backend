@@ -36,7 +36,7 @@ public class CustomerService {
         log.info("Attempting to create customer with name: {}", customerDto.getName());
 
         if (customerRepository.existsByNameIgnoreCase(customerDto.getName())) {
-            throw new AlreadyExistsException("Employee with name " + customerDto.getName() + " already exists.");
+            throw new AlreadyExistsException("Customer with name " + customerDto.getName() + " already exists.");
         }
         CustomerEntity customerEntity = customerMapping.customerToEntity(customerDto);
         CustomerEntity savedCustomer = customerRepository.save(customerEntity);

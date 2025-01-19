@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <include file="db/changelog/changelog-master.xml"/>
+
+    <changeSet id="2025-01-18-01 Insert test data into customer table" author="henrygrunberg">
+        <insert tableName="customer">
+            <column name="name" value="John Doe Inc."/>
+            <column name="address" value="123 Elm Street"/>
+            <column name="city_county" value="Tallinn"/>
+            <column name="zip" value="10115"/>
+            <column name="email" value="john.doe@example.com"/>
+            <column name="phone_number" value="+37212345678"/>
+            <column name="vat_no" value="EE123456789"/>
+        </insert>
+
+        <insert tableName="customer">
+            <column name="name" value="Acme Corp."/>
+            <column name="address" value="456 Oak Avenue"/>
+            <column name="city_county" value="Tartu"/>
+            <column name="zip" value="20220"/>
+            <column name="email" value="contact@acme.com"/>
+            <column name="phone_number" value="+37287654321"/>
+            <column name="vat_no" value="EE987654321"/>
+        </insert>
+
+        <insert tableName="customer">
+            <column name="name" value="Globex Ltd."/>
+            <column name="address" value="789 Maple Boulevard"/>
+            <column name="city_county" value="Narva"/>
+            <column name="zip" value="30330"/>
+            <column name="email" value="info@globex.com"/>
+            <column name="phone_number" value="+37234567890"/>
+            <column name="vat_no" value="EE112233445"/>
+        </insert>
+    </changeSet>
+    
+    <changeSet id="2025-01-19-01 Insert test data into customer table" author="henrygrunberg">
+        <insert tableName="certification_type">
+            <column name="certification_name" value="B"/>
+        </insert>
+        
+        <insert tableName="certification_type">
+            <column name="certification_name" value="C"/>
+        </insert>
+        
+        <insert tableName="certification_type">
+            <column name="certification_name" value="CE"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="K"/>
+            <column name="current_fuel" value="300"/>
+            <column name="is_in_use" value="false"/>
+            <column name="max_load" value="50000"/>
+            <column name="registration_plate" value="123ABC"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="K"/>
+            <column name="current_fuel" value="300"/>
+            <column name="is_in_use" value="false"/>
+            <column name="max_load" value="50000"/>
+            <column name="registration_plate" value="123CBA"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="M"/>
+            <column name="current_fuel" value="150"/>
+            <column name="is_in_use" value="true"/>
+            <column name="max_load" value="30000"/>
+            <column name="registration_plate" value="456DEF"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="L"/>
+            <column name="current_fuel" value="500"/>
+            <column name="is_in_use" value="true"/>
+            <column name="max_load" value="70000"/>
+            <column name="registration_plate" value="789GHI"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="T"/>
+            <column name="current_fuel" value="250"/>
+            <column name="is_in_use" value="false"/>
+            <column name="max_load" value="20000"/>
+            <column name="registration_plate" value="ABC321"/>
+        </insert>
+
+        <insert tableName="permission">
+            <column name="description" value="ADMIN"/>
+        </insert>
+
+        <insert tableName="employee">
+            <column name="name" value="test"/>
+            <column name="permission_id" value="1"/>
+            <column name="password" value="$2a$10$huC/wMR6pQYeHgeuKeDdLOupSTPO2RXL9oRUyF04CgqvvGN9M5Z5a"/>
+        </insert>
+
+        <insert tableName="certification">
+            <column name="employee_id" value="1"/>
+            <column name="certification_type_id" value="1"/>
+            <column name="issued_date" value="2025-01-18"/>
+            <column name="expiry_date" value="2035-01-18"/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="customer_id" value="1"/>
+            <column name="pickup_date" value="2025-01-18T14:30:00"/>
+            <column name="drop_off_date" value="2025-01-19T10:00:00"/>
+            <column name="weight" value="5000"/>
+            <column name="width" value="400"/>
+            <column name="height" value="300"/>
+            <column name="length" value="900"/>
+            <column name="order_details" value="Üks soojak tee ääres ja lihtne peale tõsta, maha tõstmine samuti tee äärde."/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="customer_id" value="1"/>
+            <column name="pickup_date" value="2025-01-18T14:30:00"/>
+            <column name="drop_off_date" value="2025-01-19T10:00:00"/>
+            <column name="weight" value="5000"/>
+            <column name="width" value="400"/>
+            <column name="height" value="300"/>
+            <column name="length" value="900"/>
+            <column name="order_details" value="Üks soojak tee ääres ja lihtne peale tõsta, maha tõstmine samuti tee äärde."/>
+        </insert>
+
+        <insert tableName="job">
+            <column name="vehicle_id" value="1"/>
+            <column name="employee_id" value="1"/>
+            <column name="order_id" value="1"/>
+            <column name="pickup_date" value="2025-01-18T14:30:00"/>
+            <column name="drop_off_date" value="2025-01-19T10:00:00"/>
+            <column name="is_complete" value="false"/>
+        </insert>
+
+        <insert tableName="job">
+            <column name="vehicle_id" value="1"/>
+            <column name="employee_id" value="1"/>
+            <column name="order_id" value="2"/>
+            <column name="pickup_date" value="2025-01-18T14:30:00"/>
+            <column name="drop_off_date" value="2025-01-19T10:00:00"/>
+            <column name="is_complete" value="true"/>
+        </insert>
+
+        <insert tableName="fuel_consumption">
+            <column name="job_id" value="2"/>
+            <column name="vehicle_id" value="1"/>
+            <column name="fuel_used" value="20"/>
+            <column name="distance_driven" value="50"/>
+            <column name="consumption_date" value="2025-01-19T10:00:00"/>
+        </insert>
+
+        <insert tableName="employee">
+            <column name="name" value="test2"/>
+            <column name="permission_id" value="1"/>
+            <column name="password" value="$2a$10$huC/wMR6pQYeHgeuKeDdLOupSTPO2RXL9oRUyF04CgqvvGN9M5Z5a"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
