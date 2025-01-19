@@ -27,6 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,7 +128,7 @@ class JobServiceTest {
         List<JobDto> result = jobService.getAllJobs();
 
         assertEquals(1, result.size());
-        assertEquals(1, result.get(0).getJobId());
+        assertEquals(1, result.getFirst().getJobId());
     }
 
     @Test
@@ -199,7 +201,18 @@ class JobServiceTest {
         criteria.setSortBy("vehicleId");
 
         Page<JobEntity> page = new PageImpl<>(List.of(jobEntity));
-        Page<DoneJobTableInfoDto> mapped = new PageImpl<>(List.of(new DoneJobTableInfoDto()));
+        Page<DoneJobTableInfoDto> mapped = new PageImpl<>(List.of(new DoneJobTableInfoDto(
+                10,
+                20,
+                "345 BDF",
+                65.0,
+                200.0,
+                30,
+                "Klient",
+                LocalDateTime.now().minusDays(3),
+                LocalDateTime.now().minusDays(1),
+                true
+        )));
 
         when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
         when(jobMapping.jobPageToDoneJobDtoPage(page, PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "vehicle.vehicleId"))))
@@ -219,7 +232,16 @@ class JobServiceTest {
         criteria.setSortBy("registrationPlate");
 
         Page<JobEntity> page = new PageImpl<>(List.of(jobEntity));
-        Page<NotDoneJobTableInfoDto> mapped = new PageImpl<>(List.of(new NotDoneJobTableInfoDto()));
+        Page<NotDoneJobTableInfoDto> mapped = new PageImpl<>(List.of(new NotDoneJobTableInfoDto(
+                10,
+                20,
+                "345 BDF",
+                30,
+                "Klient",
+                LocalDateTime.now().minusDays(3),
+                LocalDateTime.now().minusDays(1),
+                true
+        )));
 
         when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
         when(jobMapping.jobPageToNotDoneJobDtoPage(page, PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "vehicle.registrationPlate"))))

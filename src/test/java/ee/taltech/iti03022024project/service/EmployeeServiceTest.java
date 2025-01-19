@@ -24,6 +24,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.*;
 
@@ -194,7 +195,7 @@ class EmployeeServiceTest {
 
         Page<EmployeeEntity> page = new PageImpl<>(List.of(employeeEntity));
         EmployeeTableInfoDto infoDto = new EmployeeTableInfoDto(
-                1, "John", "Permission", Collections.emptyList(), null
+                1, "John", "Permission", "['B', 'CE', 'D']", null
         );
         Page<EmployeeTableInfoDto> mappedPage = new PageImpl<>(List.of(infoDto));
 
@@ -219,7 +220,7 @@ class EmployeeServiceTest {
         when(passwordEncoder.matches("secret", "encodedPassword")).thenReturn(true);
 
         Key key = Keys.hmacShaKeyFor("01234567890123456789012345678901".getBytes());
-        when(applicationConfiguration.jwtkey()).thenReturn(key);
+        when(applicationConfiguration.jwtkey()).thenReturn((SecretKey) key);
 
         LoginResponseDto response = employeeService.login(loginRequest);
 

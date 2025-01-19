@@ -192,7 +192,7 @@ class OrderServiceTest {
 
     @Test
     void getOrdersWithoutJob_ShouldReturnList() {
-        List<OrderNameIdDto> dtos = List.of(new OrderNameIdDto();
+        List<OrderNameIdDto> dtos = List.of(new OrderNameIdDto());
         when(orderRepository.getOrdersWithoutJob()).thenReturn(dtos);
 
         List<OrderNameIdDto> result = orderService.getOrdersWithoutJob();
