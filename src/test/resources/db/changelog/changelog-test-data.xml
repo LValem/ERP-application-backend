@@ -131,6 +131,11 @@
             <column name="consumption_date" value="2025-01-19T10:00:00"/>
         </insert>
 
+        <insert tableName="employee">
+            <column name="name" value="test2"/>
+            <column name="permission_id" value="1"/>
+            <column name="password" value="$2a$10$huC/wMR6pQYeHgeuKeDdLOupSTPO2RXL9oRUyF04CgqvvGN9M5Z5a"/>
+        </insert>
 
     </changeSet>
 
