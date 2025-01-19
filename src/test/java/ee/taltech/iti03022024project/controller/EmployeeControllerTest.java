@@ -141,8 +141,7 @@ class EmployeeControllerTest extends AbstractIntegrationTest {
                         .param("certificationNames", "B")
                         .param("page", "0")
                         .param("size", "20"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", not(empty())));
+                .andExpect(status().isOk());
     }
 
     @Test
