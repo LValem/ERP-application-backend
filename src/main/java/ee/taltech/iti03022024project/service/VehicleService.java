@@ -36,7 +36,7 @@ public class VehicleService {
     public VehicleDto createVehicle(VehicleDto vehicleDto) {
         if (vehicleRepository.existsByRegistrationPlate(vehicleDto.getRegistrationPlate())) {
             throw new AlreadyExistsException
-                    ("vehicle with registration plate " + vehicleDto.getRegistrationPlate() + " already exists.");
+                    ("Vehicle with registration plate " + vehicleDto.getRegistrationPlate() + " already exists.");
         }
         VehicleEntity vehicleEntity = new VehicleEntity(null, vehicleDto.getVehicleType(),
                 vehicleDto.getIsInUse(), vehicleDto.getMaxLoad(), vehicleDto.getCurrentFuel(), vehicleDto.getRegistrationPlate());

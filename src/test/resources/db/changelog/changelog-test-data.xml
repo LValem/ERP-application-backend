@@ -57,13 +57,45 @@
         <insert tableName="certification_type">
             <column name="certification_name" value="CE"/>
         </insert>
-        
+
         <insert tableName="vehicle">
             <column name="vehicle_type" value="K"/>
             <column name="current_fuel" value="300"/>
             <column name="is_in_use" value="false"/>
             <column name="max_load" value="50000"/>
             <column name="registration_plate" value="123ABC"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="K"/>
+            <column name="current_fuel" value="300"/>
+            <column name="is_in_use" value="false"/>
+            <column name="max_load" value="50000"/>
+            <column name="registration_plate" value="123CBA"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="M"/>
+            <column name="current_fuel" value="150"/>
+            <column name="is_in_use" value="true"/>
+            <column name="max_load" value="30000"/>
+            <column name="registration_plate" value="456DEF"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="L"/>
+            <column name="current_fuel" value="500"/>
+            <column name="is_in_use" value="true"/>
+            <column name="max_load" value="70000"/>
+            <column name="registration_plate" value="789GHI"/>
+        </insert>
+
+        <insert tableName="vehicle">
+            <column name="vehicle_type" value="T"/>
+            <column name="current_fuel" value="250"/>
+            <column name="is_in_use" value="false"/>
+            <column name="max_load" value="20000"/>
+            <column name="registration_plate" value="ABC321"/>
         </insert>
 
         <insert tableName="permission">

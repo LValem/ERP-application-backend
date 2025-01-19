@@ -57,17 +57,4 @@ public class VehicleSpecifications {
             return cb.like(cb.lower(root.get(REGISTRATION_PLATE)), "%" + registrationPlate.toLowerCase() + "%");
         };
     }
-
-//    public static Specification<VehicleEntity> sortByRegistrationPlate(Sort.Direction direction) {
-//        return (root, query, cb) -> {
-//            if (query != null) {
-//                if (direction == Sort.Direction.DESC) {
-//                    query.orderBy(cb.desc(root.get(REGISTRATION_PLATE)));
-//                } else {
-//                    query.orderBy(cb.asc(root.get(REGISTRATION_PLATE)));
-//                }
-//            }
-//            return null;
-//        };
-//    }
 }
