@@ -1,12 +1,18 @@
 package ee.taltech.iti03022024project.controller;
 
+import ee.taltech.iti03022024project.dto.PageResponse;
 import ee.taltech.iti03022024project.dto.UpdateVehicleRequestDto;
 import ee.taltech.iti03022024project.dto.VehicleDto;
+import ee.taltech.iti03022024project.dto.query.VehicleTableInfoDto;
+import ee.taltech.iti03022024project.dto.searchcriteria.VehicleSearchCriteria;
 import ee.taltech.iti03022024project.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +26,7 @@ import java.util.List;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private static final Logger log = LoggerFactory.getLogger(VehicleController.class);
 
     @Operation(
             summary = "Add a new vehicle to the system",
@@ -84,4 +91,22 @@ public class VehicleController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(
+            summary = "Search for vehicles in table view",
+            description = "Search vehicles by criteria, sort, and return a paginated table view."
+    )
+    @ApiResponse(responseCode = "200", description = "Vehicles retrieved successfully")
+    @ApiResponse(responseCode = "403", description = "User doesn't have correct permissions!")
+    @ApiResponse(responseCode = "404", description = "There are no vehicles")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'DRIVER')")
+    @GetMapping("/table")
+    public ResponseEntity<PageResponse<VehicleTableInfoDto>> searchVehicles(@Valid VehicleSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new VehicleSearchCriteria();
+        }
+        PageResponse<VehicleTableInfoDto> response = vehicleService.searchVehicleTable(criteria);
+        return ResponseEntity.ok(response);
+    }
+
 }
