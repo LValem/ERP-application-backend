@@ -141,7 +141,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_ShouldUpdateWhenValid() {
         when(employeeRepository.findById(1)).thenReturn(Optional.of(employeeEntity));
-        when(employeeService.getEmployeeById(1)).thenReturn(Optional.of(employeeDto));
+        when(employeeMapping.employeeToDto(employeeEntity)).thenReturn(employeeDto);
         when(passwordEncoder.encode("newPass")).thenReturn("hashedNewPass");
         when(employeeRepository.save(employeeEntity)).thenReturn(employeeEntity);
 
@@ -168,7 +168,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_ShouldThrowAlreadyExistsWhenNameDuplicated() {
         when(employeeRepository.findById(1)).thenReturn(Optional.of(employeeEntity));
-        when(employeeService.getEmployeeById(1)).thenReturn(Optional.of(employeeDto));
+        when(employeeMapping.employeeToDto(employeeEntity)).thenReturn(employeeDto);
         when(employeeRepository.existsByNameIgnoreCase("Mike")).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> employeeService.updateEmployee(1, "Mike", 2, "xxx"));
@@ -178,7 +178,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_ShouldThrowWrongValueWhenPermissionIdInvalid() {
         when(employeeRepository.findById(1)).thenReturn(Optional.of(employeeEntity));
-        when(employeeService.getEmployeeById(1)).thenReturn(Optional.of(employeeDto));
+        when(employeeMapping.employeeToDto(employeeEntity)).thenReturn(employeeDto);
 
         assertThrows(WrongValueException.class, () -> employeeService.updateEmployee(1, "NewName", 99, "NewPass"));
         verify(employeeRepository, never()).save(any());

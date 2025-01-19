@@ -44,29 +44,36 @@ class CertificationTypeServiceTest {
     void setUp() {
         certificationTypeDto = new CertificationTypeDto();
         certificationTypeDto.setCertificationTypeId(1);
-        certificationTypeDto.setCertificationName("Hazmat License");
+        certificationTypeDto.setCertificationName("Chemicals");
 
-        certificationTypeEntity = new CertificationTypeEntity(1, "Hazmat License");
+        certificationTypeEntity = new CertificationTypeEntity(1, "Chemicals");
     }
 
     @Test
     void createCertificationType_ShouldCreateWhenNameIsUnique() {
-        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Hazmat License")).thenReturn(false);
-        when(certificationTypeRepository.save(any(CertificationTypeEntity.class))).thenReturn(certificationTypeEntity);
-        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity)).thenReturn(certificationTypeDto);
+        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Chemicals"))
+                .thenReturn(false);
+        when(certificationTypeRepository.save(any(CertificationTypeEntity.class)))
+                .thenReturn(certificationTypeEntity);
+        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity))
+                .thenReturn(certificationTypeDto);
 
         CertificationTypeDto result = certificationTypeService.createCertificationType(certificationTypeDto);
 
         assertNotNull(result);
-        assertEquals("Hazmat License", result.getCertificationName());
+        assertEquals("Chemicals", result.getCertificationName());
         verify(certificationTypeRepository).save(any(CertificationTypeEntity.class));
     }
 
     @Test
     void createCertificationType_ShouldThrowAlreadyExistsWhenNameIsDuplicate() {
-        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Hazmat License")).thenReturn(true);
+        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Chemicals"))
+                .thenReturn(true);
 
-        assertThrows(AlreadyExistsException.class, () -> certificationTypeService.createCertificationType(certificationTypeDto));
+        assertThrows(
+                AlreadyExistsException.class,
+                () -> certificationTypeService.createCertificationType(certificationTypeDto)
+        );
         verify(certificationTypeRepository, never()).save(any(CertificationTypeEntity.class));
     }
 
@@ -74,46 +81,58 @@ class CertificationTypeServiceTest {
     void getAllCertificationTypes_ShouldReturnList() {
         List<CertificationTypeEntity> entities = List.of(certificationTypeEntity);
         when(certificationTypeRepository.findAll()).thenReturn(entities);
-        when(certificationTypeMapping.certificationTypeListToDtoList(entities)).thenReturn(List.of(certificationTypeDto));
+
+        when(certificationTypeMapping.certificationTypeListToDtoList(entities))
+                .thenReturn(List.of(certificationTypeDto));
 
         List<CertificationTypeDto> result = certificationTypeService.getAllCertificationTypes();
 
         assertEquals(1, result.size());
-        assertEquals("Hazmat License", result.getFirst().getCertificationName());
+        assertEquals("Chemicals", result.get(0).getCertificationName());
         verify(certificationTypeRepository).findAll();
     }
 
     @Test
     void getCertificationTypeById_ShouldReturnWhenEntityFound() {
-        when(certificationTypeRepository.findById(1)).thenReturn(Optional.of(certificationTypeEntity));
-        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity)).thenReturn(certificationTypeDto);
+        when(certificationTypeRepository.findById(1))
+                .thenReturn(Optional.of(certificationTypeEntity));
+        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity))
+                .thenReturn(certificationTypeDto);
 
         Optional<CertificationTypeDto> result = certificationTypeService.getCertificationTypeById(1);
 
         assertTrue(result.isPresent());
-        assertEquals("Hazmat License", result.get().getCertificationName());
+        assertEquals("Chemicals", result.get().getCertificationName());
     }
 
     @Test
     void getCertificationTypeById_ShouldThrowNotFoundWhenEntityDoesNotExist() {
-        when(certificationTypeRepository.findById(anyInt())).thenReturn(Optional.empty());
+        when(certificationTypeRepository.findById(anyInt()))
+                .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> certificationTypeService.getCertificationTypeById(999));
+        assertThrows(
+                NotFoundException.class,
+                () -> certificationTypeService.getCertificationTypeById(999)
+        );
     }
 
     @Test
     void updateCertificationType_ShouldUpdateNameWhenNewNameIsUnique() {
-        when(certificationTypeRepository.findById(1)).thenReturn(Optional.of(certificationTypeEntity));
-        when(certificationTypeRepository.save(certificationTypeEntity)).thenReturn(certificationTypeEntity);
-        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity)).thenReturn(certificationTypeDto);
+        when(certificationTypeRepository.findById(1))
+                .thenReturn(Optional.of(certificationTypeEntity));
+        when(certificationTypeRepository.save(certificationTypeEntity))
+                .thenReturn(certificationTypeEntity);
+
+        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity))
+                .thenReturn(certificationTypeDto);
 
         CertificationTypeDto incomingDto = new CertificationTypeDto();
         incomingDto.setCertificationTypeId(1);
         incomingDto.setCertificationName("New Name");
-        when(certificationTypeRepository.findById(1)).thenReturn(Optional.of(certificationTypeEntity));
 
-        when(certificationTypeRepository.findById(1)).thenReturn(Optional.of(certificationTypeEntity));
-        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity)).thenReturn(incomingDto);
+        CertificationTypeDto updatedDto = new CertificationTypeDto(1, "New Name");
+        when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity))
+                .thenReturn(updatedDto);
 
         Optional<CertificationTypeDto> result = certificationTypeService.updateCertificationType(incomingDto);
 
@@ -127,34 +146,47 @@ class CertificationTypeServiceTest {
         when(certificationTypeRepository.findById(1))
                 .thenReturn(Optional.of(certificationTypeEntity));
 
+        CertificationTypeDto existingDto = new CertificationTypeDto(1, "Chemicals");
         when(certificationTypeMapping.certificationTypeToDto(certificationTypeEntity))
-                .thenReturn(certificationTypeDto);
+                .thenReturn(existingDto);
+
         CertificationTypeDto incomingDto = new CertificationTypeDto();
         incomingDto.setCertificationTypeId(1);
         incomingDto.setCertificationName("Duplicate");
-        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Duplicate")).thenReturn(true);
 
-        assertThrows(AlreadyExistsException.class, () -> certificationTypeService.updateCertificationType(incomingDto));
+        when(certificationTypeRepository.existsByCertificationNameIgnoreCase("Duplicate"))
+                .thenReturn(true);
+
+        assertThrows(
+                AlreadyExistsException.class,
+                () -> certificationTypeService.updateCertificationType(incomingDto)
+        );
         verify(certificationTypeRepository, never()).save(any(CertificationTypeEntity.class));
     }
 
+
     @Test
     void updateCertificationType_ShouldThrowNotFoundWhenEntityNotFound() {
-        when(certificationTypeRepository.findById(1)).thenReturn(Optional.empty());
+        when(certificationTypeRepository.findById(1))
+                .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> certificationTypeService.updateCertificationType(certificationTypeDto));
+        assertThrows(
+                NotFoundException.class,
+                () -> certificationTypeService.updateCertificationType(certificationTypeDto)
+        );
         verify(certificationTypeRepository, never()).save(any(CertificationTypeEntity.class));
     }
 
     @Test
     void searchCertificationTypes_ShouldReturnPagedResults() {
         CertificationTypeSearchCriteria criteria = new CertificationTypeSearchCriteria();
-        criteria.setCertificationName("Hazmat");
+        criteria.setCertificationName("Chemicals");
         criteria.setPage(0);
         criteria.setSize(10);
 
         Page<CertificationTypeEntity> page = new PageImpl<>(List.of(certificationTypeEntity));
-        when(certificationTypeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(certificationTypeRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(page);
 
         PageResponse<CertificationTypeDto> response = certificationTypeService.searchCertificationTypes(criteria);
 

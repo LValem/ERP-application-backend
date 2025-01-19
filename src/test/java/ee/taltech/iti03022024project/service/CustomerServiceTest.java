@@ -123,42 +123,68 @@ class CustomerServiceTest {
     @Test
     void updateCustomer_ShouldUpdateFields() {
         when(customerRepository.findById(1)).thenReturn(Optional.of(customerEntity));
-        when(customerService.getCustomerById(1)).thenReturn(Optional.of(customerDto));
-        when(customerRepository.save(customerEntity)).thenReturn(customerEntity);
-        when(customerMapping.customerToDto(customerEntity)).thenReturn(customerDto);
+        when(customerRepository.existsByNameIgnoreCase("New name")).thenReturn(false);
 
-        CustomerDto updatedDto = new CustomerDto();
-        updatedDto.setCustomerId(1);
-        updatedDto.setName("New Name");
-        updatedDto.setAddress("New Address");
-        updatedDto.setCityCounty("New City");
-        updatedDto.setZip("99999");
-        updatedDto.setEmail("new@abc.com");
-        updatedDto.setPhoneNumber("999-9999");
-        updatedDto.setVatNo("NEWVAT");
+        when(customerRepository.save(any(CustomerEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        when(customerRepository.existsByNameIgnoreCase("New Name")).thenReturn(false);
+        when(customerMapping.customerToDto(any(CustomerEntity.class))).thenAnswer(invocation -> {
+            CustomerEntity e = invocation.getArgument(0);
+            CustomerDto dto = new CustomerDto();
+            dto.setCustomerId(e.getCustomerId());
+            dto.setName(e.getName());
+            dto.setAddress(e.getAddress());
+            dto.setCityCounty(e.getCityCounty());
+            dto.setZip(e.getZip());
+            dto.setEmail(e.getEmail());
+            dto.setPhoneNumber(e.getPhoneNumber());
+            dto.setVatNo(e.getVatNo());
+            return dto;
+        });
 
-        Optional<CustomerDto> result = customerService.updateCustomer(updatedDto);
+        CustomerDto incoming = new CustomerDto();
+        incoming.setCustomerId(1);
+        incoming.setName("New name");
+        incoming.setAddress("New address");
+        incoming.setCityCounty("New city");
+        incoming.setZip("12345");
+        incoming.setEmail("new@abc.com");
+        incoming.setPhoneNumber("55551234");
+        incoming.setVatNo("NEWVAT");
+
+        Optional<CustomerDto> result = customerService.updateCustomer(incoming);
 
         assertTrue(result.isPresent());
-        assertEquals("New Name", result.get().getName());
-        verify(customerRepository).save(customerEntity);
+        assertEquals("New name", result.get().getName());
+        assertEquals("New address", result.get().getAddress());
+        assertEquals("New city", result.get().getCityCounty());
+        verify(customerRepository).save(any(CustomerEntity.class));
     }
+
 
     @Test
     void updateCustomer_ShouldThrowAlreadyExistsWhenNameExists() {
-        when(customerRepository.findById(1)).thenReturn(Optional.of(customerEntity));
-        when(customerService.getCustomerById(1)).thenReturn(Optional.of(customerDto));
-        when(customerRepository.existsByNameIgnoreCase("Duplicate")).thenReturn(true);
+        when(customerRepository.findById(1))
+                .thenReturn(Optional.of(customerEntity));
+        when(customerRepository.existsByNameIgnoreCase("Duplicate"))
+                .thenReturn(true);
+
+        // Important: if getCustomerById calls customerMapping,
+        // we must stub that to return a valid DTO
+        when(customerMapping.customerToDto(customerEntity))
+                .thenReturn(customerDto);
 
         CustomerDto incoming = new CustomerDto();
         incoming.setCustomerId(1);
         incoming.setName("Duplicate");
 
-        assertThrows(AlreadyExistsException.class, () -> customerService.updateCustomer(incoming));
+        assertThrows(
+                AlreadyExistsException.class,
+                () -> customerService.updateCustomer(incoming)
+        );
+
         verify(customerRepository, never()).save(any());
     }
+
 
     @Test
     void updateCustomer_ShouldThrowNotFoundWhenMissing() {

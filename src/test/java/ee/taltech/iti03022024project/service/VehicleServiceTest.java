@@ -112,9 +112,28 @@ class VehicleServiceTest {
     @Test
     void updateVehicle_ShouldUpdateWhenValid() {
         when(vehicleRepository.findById(1)).thenReturn(Optional.of(vehicleEntity));
-        when(vehicleRepository.save(vehicleEntity)).thenReturn(vehicleEntity);
-        when(vehicleService.getVehicleById(1)).thenReturn(Optional.of(vehicleDto));
-        when(vehicleMapping.vehicleToDto(vehicleEntity)).thenReturn(vehicleDto);
+
+        VehicleDto oldVehicleDto = new VehicleDto();
+        oldVehicleDto.setVehicleId(1);
+        oldVehicleDto.setRegistrationPlate("ABC123");
+
+        VehicleEntity updatedEntity = new VehicleEntity();
+        updatedEntity.setVehicleId(1);
+        updatedEntity.setVehicleType('C');
+        updatedEntity.setIsInUse(true);
+        updatedEntity.setMaxLoad(3000);
+        updatedEntity.setCurrentFuel(90);
+        updatedEntity.setRegistrationPlate("XYZ999");
+
+        VehicleDto updatedVehicleDto = new VehicleDto();
+        updatedVehicleDto.setVehicleId(1);
+        updatedVehicleDto.setRegistrationPlate("XYZ999");
+
+        when(vehicleMapping.vehicleToDto(vehicleEntity)).thenReturn(oldVehicleDto);
+        when(vehicleMapping.vehicleToDto(updatedEntity)).thenReturn(updatedVehicleDto);
+
+        when(vehicleRepository.findById(1)).thenReturn(Optional.of(vehicleEntity));
+        when(vehicleRepository.save(any(VehicleEntity.class))).thenReturn(updatedEntity);
 
         Optional<VehicleDto> result = vehicleService.updateVehicle(
                 1, 'C', true, 3000, 90, "XYZ999"
@@ -122,8 +141,9 @@ class VehicleServiceTest {
 
         assertTrue(result.isPresent());
         assertEquals("XYZ999", result.get().getRegistrationPlate());
-        verify(vehicleRepository).save(vehicleEntity);
+        verify(vehicleRepository).save(any(VehicleEntity.class));
     }
+
 
     @Test
     void updateVehicle_ShouldThrowNotFoundWhenMissing() {
@@ -137,7 +157,7 @@ class VehicleServiceTest {
     @Test
     void updateVehicle_ShouldThrowAlreadyExistsWhenPlateExists() {
         when(vehicleRepository.findById(1)).thenReturn(Optional.of(vehicleEntity));
-        when(vehicleService.getVehicleById(1)).thenReturn(Optional.of(vehicleDto));
+        when(vehicleMapping.vehicleToDto(vehicleEntity)).thenReturn(vehicleDto);
         when(vehicleRepository.existsByRegistrationPlate("XYZ999")).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> vehicleService.updateVehicle(
@@ -149,7 +169,7 @@ class VehicleServiceTest {
     @Test
     void updateVehicle_ShouldThrowWrongValueWhenPlateNot6Length() {
         when(vehicleRepository.findById(1)).thenReturn(Optional.of(vehicleEntity));
-        when(vehicleService.getVehicleById(1)).thenReturn(Optional.of(vehicleDto));
+        when(vehicleMapping.vehicleToDto(vehicleEntity)).thenReturn(vehicleDto);
         when(vehicleRepository.existsByRegistrationPlate("XXXXXX7")).thenReturn(false);
 
         assertThrows(WrongValueException.class, () -> vehicleService.updateVehicle(

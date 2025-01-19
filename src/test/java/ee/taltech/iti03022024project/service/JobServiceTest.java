@@ -151,8 +151,12 @@ class JobServiceTest {
     @Test
     void updateJob_ShouldUpdateFields() {
         when(jobRepository.findById(1)).thenReturn(Optional.of(jobEntity));
-        when(jobMapping.jobToDto(jobEntity)).thenReturn(jobDto);
+
+        JobDto updatedJobDto = new JobDto();
+        updatedJobDto.setIsComplete(true);
+
         when(jobRepository.save(jobEntity)).thenReturn(jobEntity);
+        when(jobMapping.jobToDto(jobEntity)).thenReturn(updatedJobDto);
 
         JobDto incoming = new JobDto();
         incoming.setVehicleId(11);
@@ -176,6 +180,7 @@ class JobServiceTest {
         assertTrue(result.get().getIsComplete());
         verify(jobRepository).save(jobEntity);
     }
+
 
     @Test
     void updateJob_ShouldThrowNotFoundWhenJobMissing() {

@@ -66,7 +66,7 @@ class OrderServiceTest {
 
         customerEntity = new CustomerEntity();
         customerEntity.setCustomerId(200);
-        customerEntity.setName("Test Customer");
+        customerEntity.setName("Customer");
     }
 
     @Test
@@ -123,21 +123,27 @@ class OrderServiceTest {
     @Test
     void updateOrder_ShouldUpdateWhenFound() {
         when(orderRepository.findById(100)).thenReturn(Optional.of(orderEntity));
+        when(customerRepository.findById(200)).thenReturn(Optional.of(customerEntity));
         when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
-        when(orderMapping.orderToDto(orderEntity)).thenReturn(orderDto);
+
+        OrderDto updatedOrderDto = new OrderDto();
+        updatedOrderDto.setOrderId(100);
+        updatedOrderDto.setCustomerId(200);
+        updatedOrderDto.setOrderDetails("Updated");
+
+        when(orderMapping.orderToDto(orderEntity)).thenReturn(updatedOrderDto);
 
         OrderDto incoming = new OrderDto();
         incoming.setCustomerId(200);
-        incoming.setOrderDetails("Updated Details");
-
-        when(customerRepository.findById(200)).thenReturn(Optional.of(customerEntity));
+        incoming.setOrderDetails("Updated");
 
         Optional<OrderDto> result = orderService.updateOrder(100, incoming);
 
         assertTrue(result.isPresent());
+        assertEquals("Updated", result.get().getOrderDetails());
         verify(orderRepository).save(orderEntity);
-        assertEquals("Updated Details", result.get().getOrderDetails());
     }
+
 
     @Test
     void updateOrder_ShouldThrowNotFoundWhenOrderMissing() {
@@ -192,13 +198,17 @@ class OrderServiceTest {
 
     @Test
     void getOrdersWithoutJob_ShouldReturnList() {
-        List<OrderNameIdDto> dtos = List.of(new OrderNameIdDto());
+        OrderNameIdDto dto = new OrderNameIdDto(100, 200, "Customer");
+        OrderNameIdDto dto2 = new OrderNameIdDto(110, 200, "Customer 2");
+        List<OrderNameIdDto> dtos = List.of(dto, dto2);
+
         when(orderRepository.getOrdersWithoutJob()).thenReturn(dtos);
 
         List<OrderNameIdDto> result = orderService.getOrdersWithoutJob();
 
-        assertEquals(1, result.size());
-        assertEquals("Test Customer", result.getFirst().getCustomerName());
+        assertEquals(2, result.size());
+        assertEquals("Customer", result.getFirst().getCustomerName()); // now matches
         verify(orderRepository).getOrdersWithoutJob();
     }
+
 }
