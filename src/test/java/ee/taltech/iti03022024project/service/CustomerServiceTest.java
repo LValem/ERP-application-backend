@@ -9,7 +9,6 @@ import ee.taltech.iti03022024project.exception.AlreadyExistsException;
 import ee.taltech.iti03022024project.exception.NotFoundException;
 import ee.taltech.iti03022024project.mapping.CustomerMapping;
 import ee.taltech.iti03022024project.repository.CustomerRepository;
-import ee.taltech.iti03022024project.repository.specifications.CustomerSpecifications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

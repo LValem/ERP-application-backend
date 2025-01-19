@@ -16,8 +16,6 @@ import ee.taltech.iti03022024project.repository.EmployeeRepository;
 import ee.taltech.iti03022024project.repository.JobRepository;
 import ee.taltech.iti03022024project.repository.OrderRepository;
 import ee.taltech.iti03022024project.repository.VehicleRepository;
-import ee.taltech.iti03022024project.repository.specifications.DoneJobSpecifications;
-import ee.taltech.iti03022024project.repository.specifications.NotDoneJobSpecifications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

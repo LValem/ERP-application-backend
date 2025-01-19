@@ -11,7 +11,6 @@ import ee.taltech.iti03022024project.entity.EmployeeEntity;
 import ee.taltech.iti03022024project.exception.*;
 import ee.taltech.iti03022024project.mapping.EmployeeMapping;
 import ee.taltech.iti03022024project.repository.EmployeeRepository;
-import ee.taltech.iti03022024project.repository.specifications.EmployeeSpecifications;
 import ee.taltech.iti03022024project.security.ApplicationConfiguration;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;

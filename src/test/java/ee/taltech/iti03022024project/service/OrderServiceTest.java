@@ -11,7 +11,6 @@ import ee.taltech.iti03022024project.exception.NotFoundException;
 import ee.taltech.iti03022024project.mapping.OrderMapping;
 import ee.taltech.iti03022024project.repository.CustomerRepository;
 import ee.taltech.iti03022024project.repository.OrderRepository;
-import ee.taltech.iti03022024project.repository.specifications.OrderSpecifications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
