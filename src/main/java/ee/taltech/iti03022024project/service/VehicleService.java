@@ -39,7 +39,7 @@ public class VehicleService {
                     ("vehicle with registration plate " + vehicleDto.getRegistrationPlate() + " already exists.");
         }
         VehicleEntity vehicleEntity = new VehicleEntity(null, vehicleDto.getVehicleType(),
-                null, vehicleDto.getMaxLoad(), vehicleDto.getCurrentFuel(), vehicleDto.getRegistrationPlate());
+                vehicleDto.getIsInUse(), vehicleDto.getMaxLoad(), vehicleDto.getCurrentFuel(), vehicleDto.getRegistrationPlate());
         VehicleEntity savedVehicleEntity = vehicleRepository.save(vehicleEntity);
 
         log.info("Created vehicle with registration plate: {}", vehicleDto.getRegistrationPlate());
@@ -132,23 +132,16 @@ public class VehicleService {
                 VehicleSpecifications.vehicleId(criteria.getVehicleId())
                         .and(VehicleSpecifications.vehicleType(criteria.getVehicleType()))
                         .and(VehicleSpecifications.isInUse(criteria.getIsInUse()))
-                        .and(VehicleSpecifications.maxLoad(criteria.getMaxLoad()))
-                        .and(VehicleSpecifications.currentFuel(criteria.getCurrentFuel()))
+                        .and(VehicleSpecifications.loadBetween(criteria.getMinimumLoad(), criteria.getMaximumLoad()))
+                        .and(VehicleSpecifications.fuelBetween(criteria.getMinFuel(), criteria.getMaxFuel()))
                         .and(VehicleSpecifications.registrationPlateLike(criteria.getRegistrationPlate()))
         );
 
-        Pageable pageable;
-//        if (sortBy.equals("registrationPlate")) {
-//            spec = spec.and(VehicleSpecifications.sortByRegistrationPlate(direction));
-//            pageable = PageRequest.of(page, size);
-//        } else {
-//            pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-//        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<VehicleEntity> vehicleEntities = vehicleRepository.findAll(spec, pageable);
         Page<VehicleTableInfoDto> vehicleDtos = vehicleMapping.vehiclePageToTableInfoDtoPage(vehicleEntities, pageable);
         log.info("Fetched {} vehicles based on search criteria.", vehicleDtos.getTotalElements());
         return new PageResponse<>(vehicleDtos);
     }
-
 }

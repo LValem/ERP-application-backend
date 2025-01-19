@@ -19,10 +19,16 @@ public class VehicleSearchCriteria {
     private Boolean isInUse;
 
     @Size(min = 1, max = 100000)
-    private Integer maxLoad;
+    private Integer minimumLoad;
+
+    @Size(min = 1, max = 100000)
+    private Integer maximumLoad;
 
     @Size(min = 1, max = 1000)
-    private Integer currentFuel;
+    private Integer minFuel;
+
+    @Size(min = 1, max = 1000)
+    private Integer maxFuel;
 
     @Size(min = 1, max = 10)
     private String registrationPlate;

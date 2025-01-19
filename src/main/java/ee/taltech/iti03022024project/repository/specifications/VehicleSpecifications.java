@@ -24,13 +24,32 @@ public class VehicleSpecifications {
         return (root, query, cb) -> isInUse == null ? null : cb.equal(root.get("isInUse"), isInUse);
     }
 
-    public static Specification<VehicleEntity> maxLoad(Integer maxLoad) {
-        return (root, query, cb) -> maxLoad == null ? null : cb.equal(root.get("maxLoad"), maxLoad);
+    public static Specification<VehicleEntity> loadBetween(Integer minimumLoad, Integer maximumLoad) {
+        return (root, query, cb) -> {
+            if (minimumLoad == null && maximumLoad == null) return null;
+            if (minimumLoad != null && maximumLoad != null) {
+                return cb.between(root.get("maxLoad"), minimumLoad, maximumLoad);
+            } else if (minimumLoad != null) {
+                return cb.greaterThanOrEqualTo(root.get("maxLoad"), minimumLoad);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("maxLoad"), maximumLoad);
+            }
+        };
     }
 
-    public static Specification<VehicleEntity> currentFuel(Integer currentFuel) {
-        return (root, query, cb) -> currentFuel == null ? null : cb.equal(root.get("currentFuel"), currentFuel);
+    public static Specification<VehicleEntity> fuelBetween(Integer minFuel, Integer maxFuel) {
+        return (root, query, cb) -> {
+            if (minFuel == null && maxFuel == null) return null;
+            if (minFuel != null && maxFuel != null) {
+                return cb.between(root.get("currentFuel"), minFuel, maxFuel);
+            } else if (minFuel != null) {
+                return cb.greaterThanOrEqualTo(root.get("currentFuel"), minFuel);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("currentFuel"), maxFuel);
+            }
+        };
     }
+
 
     public static Specification<VehicleEntity> registrationPlateLike(String registrationPlate) {
         return (root, query, cb) -> {
