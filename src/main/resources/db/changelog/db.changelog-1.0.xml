@@ -254,5 +254,22 @@
     <changeSet id="2024-11-15-1 change table name order to orders" author="henrygrunberg">
         <renameTable oldTableName="order" newTableName="orders"/>
     </changeSet>
-    
+
+    <changeSet id="2024-11-20-01 Insert admin employee" author="lennartvalem">
+        <insert tableName="employee">
+            <column name="name" value="Admin"/>
+            <column name="permission_id" value="1"/>
+            <column name="password" value="admin123!"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2024-11-25-01 Update admin password" author="lennartvalem">
+        <update tableName="employee">
+            <column name="password" value="$2a$10$8P/bxvVMhiCNSIeyvZ52x.v8cc771qcVq79lwFgItblo25.CG0vR."/>
+        </update>
+    </changeSet>
+
+
+
+
 </databaseChangeLog>

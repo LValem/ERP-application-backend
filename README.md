@@ -1,10 +1,3 @@
-
-# iti0302-2024 Backend repository
-
-### [kallur.servebeer.com](http://kallur.servebeer.com)
-### [Frontend repository](https://gitlab.cs.taltech.ee/hegrun/iti0302-2024-frontend)
-### [Project wiki](https://gitlab.cs.taltech.ee/hegrun/iti0302-2024-project/-/wikis/Project-wiki)
-
 ## Project overview
 
 The aim of this project is to create a **comprehensive ERP system** for a crane trucking company, providing a centralized solution to optimize its operations. The resulting **web application** aims to streamline a variety of logistics tasks, including the management of incoming jobs, task creation, driver and vehicle assignments, and scheduling.
@@ -75,8 +68,7 @@ Before running this project, make sure you have the following installed:
 
 1. Clone the repository:
    ```
-   git clone https://gitlab.cs.taltech.ee/hegrun/iti0302-2024-backend.git
-   cd iti0302-2024-backend
+   https://github.com/LValem/ERP-application-backend.git
    ```
 
 2. Edit the `application.properties` file to configure **your** database connection:
@@ -98,8 +90,7 @@ Before running this project, make sure you have the following installed:
 
 1. Clone the frontend repository:
    ```
-   git clone https://gitlab.cs.taltech.ee/hegrun/iti0302-2024-frontend.git
-   cd iti0302-2024-frontend
+   https://github.com/LValem/ERP-application-frontend.git
    ```
 
 2. Install dependencies:
